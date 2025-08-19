@@ -4,33 +4,35 @@
 #include <FrogEngine/Utility.h>
 
 namespace FrogEngine {
+    struct OsWindow;
+
     enum class WindowStyle : u8 {
-        HELLO = 0,
+        DEFAULT = 0,
     };
 
     struct WindowInfo {
-        const char *title;
-
-        i32 width, height;
-        i32 x, y;
-
-        WindowStyle style;
+        const wchar_t* title { L"Frog Engine Game" };
+        i32            width { 640 };
+        i32            height { 480 };
+        i32            x { 100 };
+        i32            y { 100 };
+        WindowStyle    style { WindowStyle::DEFAULT };
     };
 
-    struct OSWindow;
-
     class Window {
-    public:
+      public:
         Window();
-
         ~Window();
 
-        bool init(const WindowInfo *window_info);
-
+        bool init(const WindowInfo* window_info);
+        [[nodiscard]]
+        bool checkStatus() const;
         bool pollEvents();
 
-    private:
-        OSWindow *osWindow;
+      private:
+        OsWindow* osWindow { nullptr };
+        u16       resultStatus {};
+        u64       keyboardInputs {};
     };
 }
 
