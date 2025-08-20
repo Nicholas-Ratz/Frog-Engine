@@ -1,6 +1,6 @@
 ---
 Language: Cpp
-AlignAfterOpenBracket: BlockIndent
+AlignAfterOpenBracket: AlwaysBreak
 AlignArrayOfStructures: Right
 AlignConsecutiveAssignments:
   Enabled: true
@@ -77,7 +77,7 @@ BreakFunctionDefinitionParameters: false
 BreakInheritanceList: AfterColon
 BreakStringLiterals: true
 BreakTemplateDeclarations: Yes
-ColumnLimit: 120
+ColumnLimit: 100
 CompactNamespaces: true
 Cpp11BracedListStyle: false
 EmptyLineAfterAccessModifier: Never
@@ -96,7 +96,6 @@ IndentCaseBlocks: false
 IndentCaseLabels: true
 IndentExportBlock: true
 IndentExternBlock: false
-IndentPPDirectives: AfterHash
 IndentWidth: 4
 IndentWrappedFunctionNames: true
 InsertBraces: false
@@ -105,7 +104,7 @@ IntegerLiteralSeparator:
   Binary: 4
   Decimal: 3
   Hex: 2
-MaxEmptyLinesToKeep: 3
+MaxEmptyLinesToKeep: 2
 NamespaceIndentation: All
 PackConstructorInitializers: CurrentLine
 PenaltyReturnTypeOnItsOwnLine: 100
@@ -115,7 +114,6 @@ ReferenceAlignment: Right
 ReflowComments: true
 RemoveBracesLLVM: true
 RemoveEmptyLinesInUnwrappedLines: true
-SeparateDefinitionBlocks: Always
 RemoveSemicolon: true
 SpaceAfterCStyleCast: false
 SpaceAfterLogicalNot: false
