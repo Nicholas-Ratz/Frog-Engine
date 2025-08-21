@@ -1,6 +1,10 @@
 # Generated from CLion Inspection settings
 ---
 Checks: >
+  -*,
+  bugprone-*,
+  -bugprone-easily-swappable-parameters,
+  performance-*,
   readability-identifier-naming,
 
 CheckOptions:

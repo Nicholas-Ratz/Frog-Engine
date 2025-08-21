@@ -94,7 +94,6 @@ IncludeCategories:
 IndentAccessModifiers: false
 IndentCaseBlocks: false
 IndentCaseLabels: true
-IndentExportBlock: true
 IndentExternBlock: false
 IndentWidth: 4
 IndentWrappedFunctionNames: true
