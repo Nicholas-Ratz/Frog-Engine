@@ -32,7 +32,6 @@ namespace FrogEngine {
 
         void init(const WindowInfo* window_info);
         void close() const;
-
         bool pollEvents();
 
         void        setWindowTitle(const char* title);

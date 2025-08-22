@@ -11,5 +11,6 @@ int main() {
 
     while (window.pollEvents())
         if (window.getKeyPress() & FrogEngine::KEY_ESCAPE) window.close();
+
     return 0;
 }
