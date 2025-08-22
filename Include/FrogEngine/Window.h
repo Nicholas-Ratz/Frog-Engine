@@ -5,6 +5,9 @@
 
 #ifdef FR_WINDOWS
 #define FROG_ENGINE_ICON 101
+#ifdef NDEBUG
+#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+#endif
 #endif
 
 namespace FrogEngine {

@@ -2,8 +2,8 @@
 #define FR_LOG_H
 
 namespace FrogEngine {
-    void LogInfo(const char* message);
-    void LogError(const char* error);
+    void logInfo(const char* message);
+    void logError(const char* error);
 }
 
 #endif

@@ -7,28 +7,37 @@
 #include <FrogEngine/Window.h>
 
 namespace FrogEngine {
-    void Window::startTextInput() { textInputEnabled = true; }
-    void Window::stopTextInput() { textInputEnabled = false; }
+    void Window::startTextInput() {
+        textInputEnabled = true;
+        logInfo("Text Input Activated");
+    }
+    void Window::stopTextInput() {
+        textInputEnabled = false;
+        logInfo("Text Input Deactivated");
+    }
     void Window::loadTextInput(const char* text, const u32 length) {
         free(textInput);
         textAllocated = TEXT_INPUT_ALIGNMENT * (length / TEXT_INPUT_ALIGNMENT + 1);
         textInput     = (char*)malloc(textAllocated);
-        if (!textInput) LogError("Failed to allocate text input");
+        if (!textInput) logError("Failed to allocate text input");
         strcpy_s(textInput, length, text);
         textIndex            = length;
         textInput[textIndex] = 0;
+        logInfo("Text Input Loaded");
     }
     void Window::clearTextInput() {
         free(textInput);
         textAllocated = TEXT_INPUT_ALIGNMENT;
         textInput     = (char*)malloc(TEXT_INPUT_ALIGNMENT * sizeof(char));
-        if (!textInput) LogError("Failed to allocate text input");
+        if (!textInput) logError("Failed to allocate text input");
         textIndex    = 0;
         textInput[0] = 0;
+        logInfo("Text Input Cleared");
     }
     void Window::setTextIndex(const u32 index) {
         if (index >= textAllocated) return;
         textIndex = index;
+        logInfo("Text Index Set");
     }
     const char* Window::getText() const { return textInput; }
     u32         Window::getTextIndex() const { return textIndex; }
@@ -60,12 +69,12 @@ namespace FrogEngine {
         if (textIndex >= textAllocated - 1) {
             textAllocated += TEXT_INPUT_ALIGNMENT;
             textInput      = (char*)realloc(textInput, textAllocated);
-            if (!textInput) LogError("Failed to reallocate text input");
+            if (!textInput) logError("Failed to reallocate text input");
         }
         if ((i32)textIndex < (i32)(textAllocated - TEXT_INPUT_ALIGNMENT - 1)) {
             textAllocated -= TEXT_INPUT_ALIGNMENT;
             textInput      = (char*)realloc(textInput, textAllocated);
-            if (!textInput) LogError("Failed to reallocate text input");
+            if (!textInput) logError("Failed to reallocate text input");
         }
     }
 }
