@@ -10,6 +10,9 @@
 namespace FrogEngine {
     struct OsWindow;
 
+    constexpr u32 TEXT_INPUT_ALIGNMENT { 256 };
+    constexpr u32 MAX_INPUT_POLLING { 16 };
+
     enum WindowStyle : u8 {
         WINDOWED   = 0,
         BORDERLESS = 1,
@@ -65,7 +68,7 @@ namespace FrogEngine {
 
         void handleMouseEvents(u64 bit, bool isDown);
         void handleKeyEvents(u64 input, bool isDown);
-        void handleTextEvents(char character);
+        void handleTextEvents(u32 character);
 
       private:
         WindowInfo windowInfo {};
@@ -76,7 +79,7 @@ namespace FrogEngine {
 
         char* textInput { nullptr };
         u32   textIndex { 0 };
-        u32   textAllocated { 128 };
+        u32   textAllocated { TEXT_INPUT_ALIGNMENT };
 
         u8  mousePress { 0 };
         u8  mouseDown { 0 };

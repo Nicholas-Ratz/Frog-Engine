@@ -29,7 +29,7 @@ namespace FrogEngine {
         osWindow->windowClass.hCursor       = LoadCursor(nullptr, IDC_ARROW);
         osWindow->windowClass.lpfnWndProc   = windowProc;
         osWindow->windowClass.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
-        
+
         if (!RegisterClass(&osWindow->windowClass))
             LogError("WINDOWS, Failed to register window class");
     }
@@ -37,8 +37,8 @@ namespace FrogEngine {
     Window::~Window() {
         if (!UnregisterClass(FR_WINDOW_CLASS_NAME, osWindow->hInstance))
             LogError("WINDOWS, Failed to unregister window class");
-        free(osWindow);
         free(textInput);
+        free(osWindow);
     }
 
     void Window::init(const WindowInfo* window_info) {
@@ -109,12 +109,10 @@ namespace FrogEngine {
         if (GetAsyncKeyState(VK_RSHIFT) & 0x80'00) bit |= 1ull << 51;
         if (GetAsyncKeyState(VK_LMENU) & 0x80'00) bit |= 1ull << 52;
         if (GetAsyncKeyState(VK_RMENU) & 0x80'00) bit |= 1ull << 53;
-
         constexpr u64 MODIFIER_REGION = 0b11'1111ull << 48;
-
-        keyPress   = bit & ~keyDown;
-        keyRelease = keyDown & ~bit & MODIFIER_REGION;
-        keyDown    = keyDown & ~MODIFIER_REGION | bit;
+        keyPress                      = bit & ~keyDown;
+        keyRelease                    = keyDown & ~bit & MODIFIER_REGION;
+        keyDown                       = keyDown & ~MODIFIER_REGION | bit;
 
         POINT point;
         if (!GetCursorPos(&point) || !ScreenToClient(osWindow->hWindow, &point))
