@@ -1,20 +1,14 @@
-#ifndef FR_WINDOW_H
-#define FR_WINDOW_H
+#ifndef FROGENGINE_WINDOW_H
+#define FROGENGINE_WINDOW_H
 
-#include <FrogEngine/Utility.h>
-
-#ifdef FR_WINDOWS
-#define FROG_ENGINE_ICON 101
-#ifdef NDEBUG
-#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
-#endif
-#endif
+#include <FrSTD/Allocator.h>
+#include <FrSTD/Utility.h>
 
 namespace FrogEngine {
     struct OsWindow;
 
-    constexpr u32 TEXT_INPUT_ALIGNMENT { 256 };
-    constexpr u32 MAX_INPUT_POLLING { 16 };
+    constexpr usize TEXT_INPUT_BUFFER_SIZE { 256 };
+    constexpr u32   MAX_INPUT_POLLING { 16 };
 
     enum WindowStyle : u8 {
         WINDOWED   = 0,
@@ -33,6 +27,11 @@ namespace FrogEngine {
 
     class Window {
       public:
+#ifdef FR_WINDOWS
+        explicit Window(const char* class_name);
+        const char* className { "FR_CLASS_NAME" };
+#endif
+
         Window();
         ~Window();
 
@@ -51,11 +50,9 @@ namespace FrogEngine {
 
         void        startTextInput();
         void        stopTextInput();
-        void        loadTextInput(const char* text, u32 length);
+        void        loadTextInput(const char* text, u32 size);
         void        clearTextInput();
-        void        setTextIndex(u32 index);
         const char* getText() const;
-        u32         getTextIndex() const;
         bool        isTextInputEnabled() const;
 
         void getMousePos(i32* x, i32* y) const;
@@ -80,9 +77,7 @@ namespace FrogEngine {
 
         bool textInputEnabled { false };
 
-        char* textInput { nullptr };
-        u32   textIndex { 0 };
-        u32   textAllocated { TEXT_INPUT_ALIGNMENT };
+        FrSTD::Allocators::Stack<char> textInputBuffer { TEXT_INPUT_BUFFER_SIZE };
 
         u8  mousePress { 0 };
         u8  mouseDown { 0 };

@@ -5,6 +5,7 @@ Checks: >
   bugprone-*,
   -bugprone-easily-swappable-parameters,
   performance-*,
+  -performance-no-int-to-ptr,
   readability-identifier-naming,
 
 CheckOptions:

@@ -1,14 +1,18 @@
 #ifndef FROGENGINE_WINDOWS_H
 #define FROGENGINE_WINDOWS_H
 
-#include <FrogEngine/Utility.h>
+#include <FrSTD/Utility.h>
 
 #ifdef FR_WINDOWS
+
+#define FROG_ENGINE_ICON 101
+#ifdef FR_RELEASE
+#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+#endif
+
 #include <Windows.h>
 
 #include <FrogEngine/Window.h>
-
-constexpr TCHAR FR_WINDOW_CLASS_NAME[] { TEXT("FR_WINDOW_CLASS") };
 
 namespace FrogEngine {
     struct OsWindow {

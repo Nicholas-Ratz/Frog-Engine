@@ -1,13 +1,31 @@
+#include <stdarg.h>
 #include <stdio.h>
-#include <stdlib.h>
 
+#include <FrSTD/Utility.h>
 #include <FrogEngine/Log.h>
-#include <FrogEngine/Utility.h>
 
 namespace FrogEngine {
-    void logInfo(const char* message) {
-#ifndef NDEBUG
-        printf("[INFO]: %s\n", message);
+    void logInfo(const char* format, ...) {
+#ifdef FR_DEBUG
+        char* args;
+
+        va_start(args, format);
+        printf("[INFO] ");
+        vprintf(format, args);
+        printf("\n");
+        va_end(args);
+#endif
+    }
+
+    void logWarning(const char* format, ...) {
+#ifdef FR_DEBUG
+        char* args;
+
+        va_start(args, format);
+        fprintf(stderr, "[WARNING] ");
+        vfprintf(stderr, format, args);
+        fprintf(stderr, "\n");
+        va_end(args);
 #endif
     }
 }
@@ -16,12 +34,18 @@ namespace FrogEngine {
 #include <Windows.h>
 
 namespace FrogEngine {
-    void logError(const char* error) {
-#ifndef NDEBUG
-        fprintf(stderr, "[ERROR]: %s\n", error);
+    void logError(const char* format, ...) {
+#ifdef FR_DEBUG
+        char* args;
+
+        va_start(args, format);
+        fprintf(stderr, "[ERROR] ");
+        vfprintf(stderr, format, args);
+        fprintf(stderr, "\n");
+        va_end(args);
 #endif
 
-        MessageBox(nullptr, TEXT(error), TEXT("Error"), MB_OK | MB_ICONERROR);
+        MessageBox(nullptr, TEXT(format), TEXT("Error"), MB_OK | MB_ICONERROR);
 
         exit(-1);
     }

@@ -13,15 +13,15 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Files for Library
 # =========================
 add_library(FrogEngine STATIC
-        Include/FrogEngine/Log.h
-        Include/FrogEngine/Utility.h
         Include/FrogEngine/Window.h
+        Include/FrogEngine/Log.h
+        Include/FrSTD/Utility.h
+        Source/FrWindow/Windows/Windows.h
         Source/FrWindow/Windows/Window.cpp
         Source/FrWindow/Windows/KeyInput.cpp
         Source/FrWindow/Windows/TextInput.cpp
-        Source/FrLog/Log.cpp
-        Source/FrWindow/Windows/Windows.h
         Source/FrWindow/Windows/MouseInput.cpp
+        Source/FrLog/Log.cpp
 )
 
 
@@ -42,5 +42,6 @@ target_link_libraries(FrogEngine Vulkan::Vulkan)
 project(Example)
 add_executable(Example
         Examples/main.cpp
-        Examples/app.rc)
+        Examples/app.rc
+        Include/FrSTD/Allocator.h)
 target_link_libraries(Example FrogEngine)

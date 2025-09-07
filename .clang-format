@@ -89,6 +89,8 @@ IncludeCategories:
     Priority: 1
   - Regex: '^<FrogEngine/[A-Za-z0-9]+\.h>$'
     Priority: 3
+  - Regex: '^<FrSTD/[A-Za-z0-9]+\.h>$'
+    Priority: 3
   - Regex: '^<[A-Za-z0-9]+/[A-Za-z0-9]+\.h>$'
     Priority: 2
 IndentAccessModifiers: false
