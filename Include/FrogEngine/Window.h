@@ -4,6 +4,11 @@
 #include <FrSTD/Allocator.h>
 #include <FrSTD/Utility.h>
 
+#ifdef FR_WINDOWS
+#include <Windows.h>
+#endif
+
+
 namespace FrogEngine {
     struct OsWindow;
 
@@ -23,6 +28,7 @@ namespace FrogEngine {
         i32         x { 100 };
         i32         y { 100 };
         WindowStyle style { WINDOWED };
+        const char* icon { nullptr };
     };
 
     class Window {
@@ -39,10 +45,11 @@ namespace FrogEngine {
         void close() const;
         bool pollEvents();
 
-        void        setWindowTitle(const char* title);
-        void        setWindowPos(i32 x, i32 y);
-        void        setWindowSize(i32 width, i32 height);
-        void        setWindowStyle(WindowStyle window_style);
+        void setWindowTitle(const char* title);
+        void setWindowPos(i32 x, i32 y);
+        void setWindowSize(i32 width, i32 height);
+        void setWindowStyle(WindowStyle window_style);
+
         const char* getWindowTitle() const;
         void        getWindowPos(i32* x, i32* y) const;
         void        getWindowSize(i32* width, i32* height) const;

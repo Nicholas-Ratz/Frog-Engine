@@ -45,7 +45,7 @@ namespace FrogEngine {
         va_end(args);
 #endif
 
-        MessageBox(nullptr, TEXT(format), TEXT("Error"), MB_OK | MB_ICONERROR);
+        MessageBoxA(nullptr, format, "Error", MB_OK | MB_ICONERROR);
 
         exit(-1);
     }

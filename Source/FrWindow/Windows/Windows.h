@@ -4,8 +4,6 @@
 #include <FrSTD/Utility.h>
 
 #ifdef FR_WINDOWS
-
-#define FROG_ENGINE_ICON 101
 #ifdef FR_RELEASE
 #pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
 #endif
@@ -14,11 +12,12 @@
 
 #include <FrogEngine/Window.h>
 
+
 namespace FrogEngine {
     struct OsWindow {
-        WNDCLASS  windowClass {};
-        HINSTANCE hInstance { GetModuleHandle(nullptr) };
-        HWND      hWindow {};
+        WNDCLASSEXA windowClass { 0 };
+        HINSTANCE   hInstance { GetModuleHandle(nullptr) };
+        HWND        hWindow {};
     };
 }
 
@@ -27,18 +26,18 @@ inline LRESULT CALLBACK windowProc(
     FrogEngine::Window* window = nullptr;
 
     if (u_message == WM_NCCREATE) {
-        const auto cs = (CREATESTRUCTW*)l_param; // NOLINT
+        const auto cs = (CREATESTRUCTA*)l_param; // NOLINT
         window        = (FrogEngine::Window*)cs->lpCreateParams;
 
-        SetWindowLongPtr(h_window, GWLP_USERDATA, (LONG_PTR)window);
+        SetWindowLongPtrA(h_window, GWLP_USERDATA, (LONG_PTR)window);
     } else {
-        window = (FrogEngine::Window*)GetWindowLongPtr(h_window, GWLP_USERDATA); // NOLINT
+        window = (FrogEngine::Window*)GetWindowLongPtrA(h_window, GWLP_USERDATA); // NOLINT
     }
 
     switch (u_message) {
         case WM_CLOSE      : DestroyWindow(h_window); break;
         case WM_DESTROY    : PostQuitMessage(0); break;
-        case WM_CHAR       : window->handleTextEvents((WCHAR)w_param); break;
+        case WM_CHAR       : window->handleTextEvents(w_param); break;
         case WM_KEYDOWN    : window->handleKeyEvents(w_param, true); break;
         case WM_KEYUP      : window->handleKeyEvents(w_param, false); break;
         case WM_SYSKEYDOWN : window->handleKeyEvents(w_param, true); return 0;
