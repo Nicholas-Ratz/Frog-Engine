@@ -5,14 +5,12 @@ project(FrogEngine)
 # Set CMake Settings
 # =========================
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED OFF)
-set(CMAKE_CXX_EXTENSIONS OFF)
 
 
 # =========================
 # Files for Library
 # =========================
-add_library(FrogEngine STATIC
+add_library(FrogEngine
         Include/FrogEngine/Window.h
         Include/FrogEngine/Log.h
         Include/FrSTD/Utility.h
@@ -22,6 +20,7 @@ add_library(FrogEngine STATIC
         Source/FrWindow/Windows/TextInput.cpp
         Source/FrWindow/Windows/MouseInput.cpp
         Source/FrLog/Log.cpp
+        Include/FrogEngine/Icon.h
 )
 
 
@@ -33,7 +32,7 @@ target_include_directories(FrogEngine
 
 
 # =========================
-# Link with Vulkan and OpenAL
+# Link with Vulkan
 # =========================
 find_package(Vulkan REQUIRED)
 target_link_libraries(FrogEngine Vulkan::Vulkan)
@@ -42,6 +41,5 @@ target_link_libraries(FrogEngine Vulkan::Vulkan)
 project(Example)
 add_executable(Example
         Examples/main.cpp
-        Examples/app.rc
-        Include/FrSTD/Allocator.h)
+        Examples/app.rc)
 target_link_libraries(Example FrogEngine)

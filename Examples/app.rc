@@ -1,2 +1,2 @@
-#include <FrogEngine/Window.h>
+#include <FrogEngine/Icon.h>
 FROG_ENGINE_ICON ICON "Icon.ico"

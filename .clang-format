@@ -96,7 +96,7 @@ IncludeCategories:
 IndentAccessModifiers: false
 IndentCaseBlocks: false
 IndentCaseLabels: true
-IndentExternBlock: false
+IndentExternBlock: NoIndent
 IndentWidth: 4
 IndentWrappedFunctionNames: true
 InsertBraces: false
@@ -112,7 +112,7 @@ PenaltyReturnTypeOnItsOwnLine: 100
 PointerAlignment: Left
 QualifierAlignment: Left
 ReferenceAlignment: Right
-ReflowComments: true
+ReflowComments: Always
 RemoveBracesLLVM: true
 RemoveEmptyLinesInUnwrappedLines: true
 RemoveSemicolon: true

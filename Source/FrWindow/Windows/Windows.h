@@ -4,8 +4,6 @@
 #include <FrSTD/Utility.h>
 
 #ifdef FR_WINDOWS
-
-#define FROG_ENGINE_ICON 101
 #ifdef FR_RELEASE
 #pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
 #endif

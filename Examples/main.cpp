@@ -1,6 +1,5 @@
 #include <stdio.h>
 
-#include <FrSTD/Allocator.h>
 #include <FrogEngine/Window.h>
 
 int main() {
@@ -9,7 +8,6 @@ int main() {
         .title = "Example Game",
         .style = FrogEngine::WINDOWED,
     };
-    
     window.init(&WINDOW_INFO);
 
     window.startTextInput();

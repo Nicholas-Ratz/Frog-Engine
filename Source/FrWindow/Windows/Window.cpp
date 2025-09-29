@@ -1,4 +1,5 @@
 #include <FrSTD/Utility.h>
+#include <FrogEngine/Icon.h>
 
 #ifdef FR_WINDOWS
 #include <Windows.h>
@@ -11,7 +12,7 @@
 
 namespace FrogEngine {
     Window::Window(const char* class_name) : className(class_name) {
-        if (!SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2))
+        if (!SetProcessDPIAware())
             logWarning("WINDOWS: Failed to set DPI awareness\n  %lx", GetLastError());
 
         osWindow = (OsWindow*)malloc(sizeof(OsWindow));
@@ -34,7 +35,7 @@ namespace FrogEngine {
     }
 
     Window::Window() {
-        if (!SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2))
+        if (!SetProcessDPIAware())
             logWarning("WINDOWS: Failed to set DPI awareness\n  %lx", GetLastError());
 
         osWindow = (OsWindow*)malloc(sizeof(OsWindow));
