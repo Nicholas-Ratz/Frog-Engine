@@ -120,6 +120,12 @@ namespace FrogEngine {
         logInfo("  Title: %s", window_info->title);
         logInfo("  Size: (%i, %i)", window_info->width, window_info->height);
         logInfo("  Position: (%i, %i)", window_info->x, window_info->y);
+
+        GetClientRect(osWindow->hWindow, &rect);
+        windowInfo.x      = rect.left;
+        windowInfo.y      = rect.top;
+        windowInfo.width  = rect.right - rect.left;
+        windowInfo.height = rect.bottom - rect.top;
     }
     void Window::close() const {
         DestroyWindow(osWindow->hWindow);
@@ -256,6 +262,17 @@ namespace FrogEngine {
         *height = windowInfo.height;
     }
     WindowStyle Window::getWindowStyle() const { return windowInfo.style; }
+
+    void Window::updateWindowsRect() {
+        RECT rect;
+
+        GetClientRect(osWindow->hWindow, &rect);
+
+        windowInfo.x      = rect.left;
+        windowInfo.y      = rect.top;
+        windowInfo.width  = rect.right - rect.left;
+        windowInfo.height = rect.bottom - rect.top;
+    }
 }
 
 #endif

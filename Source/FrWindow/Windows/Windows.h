@@ -35,19 +35,20 @@ inline LRESULT CALLBACK windowProc(
     }
 
     switch (u_message) {
-        case WM_CLOSE      : DestroyWindow(h_window); break;
-        case WM_DESTROY    : PostQuitMessage(0); break;
-        case WM_CHAR       : window->handleTextEvents(w_param); break;
-        case WM_KEYDOWN    : window->handleKeyEvents(w_param, true); break;
-        case WM_KEYUP      : window->handleKeyEvents(w_param, false); break;
-        case WM_SYSKEYDOWN : window->handleKeyEvents(w_param, true); return 0;
-        case WM_SYSKEYUP   : window->handleKeyEvents(w_param, false); return 0;
-        case WM_LBUTTONDOWN: window->handleMouseEvents(FrogEngine::MOUSE_LEFT, true); break;
-        case WM_LBUTTONUP  : window->handleMouseEvents(FrogEngine::MOUSE_LEFT, false); break;
-        case WM_RBUTTONDOWN: window->handleMouseEvents(FrogEngine::MOUSE_RIGHT, true); break;
-        case WM_RBUTTONUP  : window->handleMouseEvents(FrogEngine::MOUSE_RIGHT, false); break;
-        case WM_MBUTTONDOWN: window->handleMouseEvents(FrogEngine::MOUSE_MIDDLE, true); break;
-        case WM_MBUTTONUP  : window->handleMouseEvents(FrogEngine::MOUSE_MIDDLE, false); break;
+        case WM_CLOSE           : DestroyWindow(h_window); break;
+        case WM_DESTROY         : PostQuitMessage(0); break;
+        case WM_WINDOWPOSCHANGED: window->updateWindowsRect(); break;
+        case WM_CHAR            : window->handleTextEvents(w_param); break;
+        case WM_KEYDOWN         : window->handleKeyEvents(w_param, true); break;
+        case WM_KEYUP           : window->handleKeyEvents(w_param, false); break;
+        case WM_SYSKEYDOWN      : window->handleKeyEvents(w_param, true); return 0;
+        case WM_SYSKEYUP        : window->handleKeyEvents(w_param, false); return 0;
+        case WM_LBUTTONDOWN     : window->handleMouseEvents(FrogEngine::MOUSE_LEFT, true); break;
+        case WM_LBUTTONUP       : window->handleMouseEvents(FrogEngine::MOUSE_LEFT, false); break;
+        case WM_RBUTTONDOWN     : window->handleMouseEvents(FrogEngine::MOUSE_RIGHT, true); break;
+        case WM_RBUTTONUP       : window->handleMouseEvents(FrogEngine::MOUSE_RIGHT, false); break;
+        case WM_MBUTTONDOWN     : window->handleMouseEvents(FrogEngine::MOUSE_MIDDLE, true); break;
+        case WM_MBUTTONUP       : window->handleMouseEvents(FrogEngine::MOUSE_MIDDLE, false); break;
         case WM_SYSCOMMAND:
             if (w_param == SC_KEYMENU) return 0;
         default: break;

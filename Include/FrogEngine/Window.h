@@ -63,6 +63,7 @@ namespace FrogEngine {
         bool        isTextInputEnabled() const;
 
         void getMousePos(i32* x, i32* y) const;
+        void getRelativeMousePos(f32* x, f32* y) const;
         u8   getMousePress() const;
         u8   getMouseDown() const;
         u8   getMouseRelease() const;
@@ -76,6 +77,8 @@ namespace FrogEngine {
         void handleMouseEvents(u64 bit, bool isDown);
         void handleKeyEvents(u64 input, bool isDown);
         void handleTextEvents(u32 character);
+
+        void updateWindowsRect();
 
       private:
         WindowInfo windowInfo {};
