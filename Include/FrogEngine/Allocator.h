@@ -1,45 +1,25 @@
-#ifndef FROGENGINE_ARENA_H
-#define FROGENGINE_ARENA_H
+/**
+ * @file Allocator.h
+ * @brief Allocator Module
+ */
+
+#ifndef FROGENGINE_ALLOCATOR_H
+#define FROGENGINE_ALLOCATOR_H
 
 #include <stdlib.h>
 
-#include "Utility.h"
+#include <FrogEngine/Log.h>
+#include <FrogEngine/Utility.h>
 
-namespace FrSTD::Allocators {
-    class Arena {
+namespace FrogEngine {
+
+    class Allocator {
       public:
-        explicit Arena(const usize _size) : size(_size) {
-            buffer = malloc(size + 15);
-            if (!buffer) exit(-__LINE__);
-            next = (uptr)buffer + 15 & ~15;
-        }
-        ~Arena() { free(buffer); }
-
-        ptr allocate(const usize _size) {
-            if (!buffer || next + _size > (uptr)buffer + size + 15) exit(-__LINE__);
-            const ptr result  = (ptr)next;
-            next             += _size;
-            return result;
-        }
-
-        void reset(const usize _size) {
-            destroy();
-            size   = _size;
-            buffer = malloc(size + 15);
-            if (!buffer) exit(-__LINE__);
-            next = (uptr)buffer + 15 & ~15;
-        }
-        void destroy() {
-            free(buffer);
-            buffer = nullptr;
-        }
+        Allocator();
+        ~Allocator();
 
       private:
-        ptr   buffer { nullptr };
-        usize size {};
-        uptr  next {};
     };
-     
 
     template <typename T>
     class Stack {

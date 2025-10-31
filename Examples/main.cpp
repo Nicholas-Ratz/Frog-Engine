@@ -1,14 +1,17 @@
 #include <stdio.h>
 
+#include <FrogEngine/Allocator.h>
 #include <FrogEngine/Window.h>
 
 int main() {
-    FrogEngine::Window               window("EXAMPLE_CLASS");
+    FrogEngine::Window window;
+    window.init("FROG-GAME");
+
     constexpr FrogEngine::WindowInfo WINDOW_INFO {
         .title = "Example Game",
         .style = FrogEngine::WINDOWED,
     };
-    window.init(&WINDOW_INFO);
+    window.open(&WINDOW_INFO);
 
     window.startTextInput();
 
@@ -17,6 +20,7 @@ int main() {
             window.close();
             break;
         }
+        if (window.getKeyPress() & FrogEngine::KEY_ENTER) window.setWindowTitle(window.getText());
         if (window.getKeyPress() & FrogEngine::INPUT_ANY) printf("%s\n", window.getText());
     }
 

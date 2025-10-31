@@ -1,13 +1,21 @@
+/**
+ * @file Window.h
+ * @brief Window Module
+ *
+ * This module provides cross-platform window creation and input handling.
+ * It abstracts OS-specific window management and provides a unified interface
+ * for window properties, text input, mouse, and keyboard events.
+ */
+
 #ifndef FROGENGINE_WINDOW_H
 #define FROGENGINE_WINDOW_H
 
-#include <FrSTD/Allocator.h>
-#include <FrSTD/Utility.h>
+#include <FrogEngine/Allocator.h>
+#include <FrogEngine/Utility.h>
 
-#ifdef FR_WINDOWS
+#ifdef FR_OS_WINDOWS
 #include <Windows.h>
 #endif
-
 
 namespace FrogEngine {
     struct OsWindow;
@@ -15,79 +23,288 @@ namespace FrogEngine {
     constexpr usize TEXT_INPUT_BUFFER_SIZE { 256 };
     constexpr u32   MAX_INPUT_POLLING { 16 };
 
+    /**
+     * @enum WindowStyle
+     * @brief Defines the visual style of the window.
+     */
     enum WindowStyle : u8 {
-        WINDOWED   = 0,
-        BORDERLESS = 1,
-        FULLSCREEN = 2,
+        WINDOWED   = 0, ///< Standard window with title bar and borders
+        BORDERLESS = 1, ///< Window without decorations (title bar, borders)
+        FULLSCREEN = 2, ///< Fullscreen mode using native resolution
     };
 
+    /**
+     * @struct WindowInfo
+     * @brief Configuration structure for initializing a window.
+     *
+     * This struct is passed to Window::init() to specify initial window properties.
+     * All fields have sensible defaults.
+     *
+     * @see Window::init()
+     */
     struct WindowInfo {
-        const char* title { "Frog Engine Game" };
-        i32         width { 640 };
-        i32         height { 480 };
-        i32         x { 100 };
-        i32         y { 100 };
-        WindowStyle style { WINDOWED };
-        const char* icon { nullptr };
+        const char* title { "Frog Engine Game" }; ///< Window title bar text
+        i32         width { 640 };                ///< Initial width in pixels
+        i32         height { 480 };               ///< Initial height in pixels
+        i32         x { 100 };                    ///< Initial X position on screen
+        i32         y { 100 };                    ///< Initial Y position on screen
+        WindowStyle style { WINDOWED };           ///< Initial window style
     };
 
+    /**
+     * @class Window
+     * @brief Manages window creation, input polling, and OS interaction.
+     *
+     * The Window class provides a platform-agnostic interface for:
+     * - Creating and managing native OS windows
+     * - Handling keyboard, mouse, and text input
+     * - Querying and modifying window properties
+     *
+     * @note There is only ever one window per class.
+     * @note On Windows the parameterized constructor should be used in release.
+     * @note Currently only Windows is supported, but more support may come in the future.
+     * @see WindowInfo
+     */
     class Window {
       public:
-#ifdef FR_WINDOWS
-        explicit Window(const char* class_name);
-        const char* className { "FR_CLASS_NAME" };
-#endif
-
+        /**
+         * @brief Default constructor.
+         *
+         * Initializes member variables to safe defaults. Call init() to finish window setup and
+         * open() to create window.
+         *
+         * @note Window Icons, as of now, only work for the parameterized function.
+         *
+         * @see init() open()
+         */
         Window();
+        /**
+         * @brief Destructor.
+         *
+         * Automatically closes the window and releases OS resources.
+         */
         ~Window();
 
-        void init(const WindowInfo* window_info);
+
+        /**
+         * @brief Initializes the internal OS window systems.
+         * @param class_name String containing name of internal OS name
+         *
+         * @note Must be called before any other window operations.
+         */
+        void init(const char* class_name);
+        /**
+         * @brief Open the window.
+         * @param window_info Contains important information for the window creation.
+         */
+        void open(const WindowInfo* window_info);
+        /**
+         * @brief Closes the window and releases resources.
+         *
+         * Sends close event to OS and cleans up internal state.
+         */
         void close() const;
+        /**
+         * @brief Polls and processes pending OS events.
+         * @return true if the window should continue running, false if quit has been requested.
+         *
+         * Should be called once per frame. Updates input state and dispatches events.
+         */
         bool pollEvents();
 
+
+        /**
+         * @brief Sets the window title.
+         * @param title Null-terminated string for the new title.
+         */
         void setWindowTitle(const char* title);
+        /**
+         * @brief Sets the window position on screen.
+         * @param x New X coordinate in screen space
+         * @param y New Y coordinate in screen space
+         */
         void setWindowPos(i32 x, i32 y);
+        /**
+         * @brief Sets the window client area size.
+         * @param width New width in pixels
+         * @param height New height in pixels
+         */
         void setWindowSize(i32 width, i32 height);
+        /**
+         * @brief Changes the window style (windowed, borderless, fullscreen).
+         * @param window_style New style from WindowStyle enum
+         */
         void setWindowStyle(WindowStyle window_style);
 
+
+        /**
+         * @brief Gets the current window title.
+         * @return Pointer to null-terminated title string (valid until next change)
+         */
         const char* getWindowTitle() const;
+        /**
+         * @brief Retrieves current window position.
+         * @param[out] x Pointer to store X coordinate
+         * @param[out] y Pointer to store Y coordinate
+         */
         void        getWindowPos(i32* x, i32* y) const;
+        /**
+         * @brief Retrieves current window size.
+         * @param[out] width Pointer to store width in pixels
+         * @param[out] height Pointer to store height in pixels
+         */
         void        getWindowSize(i32* width, i32* height) const;
+        /**
+         * @brief Gets the current window style.
+         * @return Current WindowStyle value
+         */
         WindowStyle getWindowStyle() const;
 
+
+        /**
+         * @brief Enables text input mode.
+         *
+         * Enables appending char input to end of Text buffer.
+         * @see stopTextInput(), loadTextInput()
+         */
         void        startTextInput();
+        /**
+         * @brief Disables text input mode.
+         *
+         * Stops writing to Text buffer.
+         * @note Does not clear.
+         */
         void        stopTextInput();
+        /**
+         * @brief Pre-loads text into the input buffer.
+         * @param text Source text to insert
+         * @param size Length of text (excluding null terminator)
+         *
+         * Useful for setting default values in text fields.
+         */
         void        loadTextInput(const char* text, u32 size);
+        /**
+         * @brief Clears all text from the input buffer.
+         */
         void        clearTextInput();
+        /**
+         * @brief Gets the current text input buffer.
+         * @return Null-terminated string of current text
+         *
+         * @note Pointer directly connected to internal Text buffer.
+         */
         const char* getText() const;
+        /**
+         * @brief Checks if text input is currently active.
+         * @return true if text input is enabled
+         */
         bool        isTextInputEnabled() const;
 
+
+        /**
+         * @brief Gets current mouse position over entire screen.
+         * @param[out] x Mouse X position
+         * @param[out] y Mouse Y position
+         */
         void getMousePos(i32* x, i32* y) const;
+        /**
+         * @brief Gets current mouse position in window client coordinates.
+         * @param[out] x Mouse X position
+         * @param[out] y Mouse Y position
+         *
+         */
         void getRelativeMousePos(f32* x, f32* y) const;
+        /**
+         * @brief Gets bitmask of mouse buttons pressed this frame.
+         * @return Bitfield using MOUSE_LEFT, MOUSE_RIGHT, MOUSE_MIDDLE
+         * @see Input
+         */
         u8   getMousePress() const;
+        /**
+         * @brief Gets bitmask of currently held mouse buttons.
+         * @return Bitfield of held buttons
+         */
         u8   getMouseDown() const;
+        /**
+         * @brief Gets bitmask of mouse buttons released this frame.
+         * @return Bitfield of released buttons
+         */
         u8   getMouseRelease() const;
+        /**
+         * @brief Gets bitmask of alphanumeric/special keys pressed this frame.
+         * @return 64-bit mask using KEY_* constants
+         */
         u64  getKeyPress() const;
+        /**
+         * @brief Gets bitmask of currently held keys.
+         * @return 64-bit mask of held keys
+         */
         u64  getKeyDown() const;
+        /**
+         * @brief Gets bitmask of keys released this frame.
+         * @return 64-bit mask of released keys
+         */
         u64  getKeyRelease() const;
+        /**
+         * @brief Gets bitmask of special keys (arrows, function, numpad) pressed this frame.
+         * @return 64-bit mask using KEY_LEFT, KEY_F1, etc.
+         */
         u64  getSpecialKeyPress() const;
+        /**
+         * @brief Gets bitmask of currently held special keys.
+         * @return 64-bit mask
+         */
         u64  getSpecialKeyDown() const;
+        /**
+         * @brief Gets bitmask of special keys released this frame.
+         * @return 64-bit mask
+         */
         u64  getSpecialKeyRelease() const;
 
+
+        /**
+         * @brief Handles mouse button state changes.
+         * @param bit Mouse button bit (MOUSE_LEFT, etc.)
+         * @param isDown true if pressed, false if released
+         *
+         * @note Called internally by OS event loop.
+         * @note Not recommended to call this function.
+         */
         void handleMouseEvents(u64 bit, bool isDown);
+        /**
+         * @brief Handles keyboard key state changes.
+         * @param input Key code from Input enum
+         * @param isDown true if pressed, false if released
+         * @note Not recommended to call this function.
+         */
         void handleKeyEvents(u64 input, bool isDown);
+        /**
+         * @brief Handles Unicode character input.
+         * @param character UTF-32 code point
+         *
+         * Called when text input is active and user types a character.
+         * @note Not recommended to call this function.
+         */
         void handleTextEvents(u32 character);
 
+
+        /**
+         * @brief Updates internal window rectangle after style/position changes.
+         *
+         * @note Called internally after window modifications.
+         */
         void updateWindowsRect();
 
       private:
+        const char* className { nullptr };
+
         WindowInfo windowInfo {};
 
         OsWindow* osWindow { nullptr };
 
         bool textInputEnabled { false };
 
-        FrSTD::Allocators::Stack<char> textInputBuffer { TEXT_INPUT_BUFFER_SIZE };
+        FrogEngine::Stack<char> textInputBuffer { TEXT_INPUT_BUFFER_SIZE };
 
         u8  mousePress { 0 };
         u8  mouseDown { 0 };
@@ -103,6 +320,21 @@ namespace FrogEngine {
         u64 keySpecialRelease { 0 };
     };
 
+    /**
+     * @enum Input
+     * @brief Bitfield constants for keyboard and mouse input.
+     *
+     * Each key or button is assigned a unique bit in a 64-bit mask.
+     * Use bitwise operations to test for multiple keys.
+     *
+     * @par Example
+     * @code
+     * if (window.getKeyDown() & (KEY_W | KEY_UP)) { moveForward(); }
+     * @endcode
+     *
+     * @note Some constants overlap in bit position across categories (e.g. KEY_F1 uses bit 0 in
+     * special keys). Use getSpecialKey*() functions for function/arrow/numpad keys.
+     */
     enum Input : u64 {
         INPUT_NONE       = 0llu,
         INPUT_ANY        = 18'446'744'073'709'551'615llu,

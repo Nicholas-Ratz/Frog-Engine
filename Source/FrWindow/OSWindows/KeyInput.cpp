@@ -1,6 +1,6 @@
-#include <FrSTD/Utility.h>
+#include <FrogEngine/Utility.h>
 
-#ifdef FR_WINDOWS
+#ifdef FR_OS_WINDOWS
 
 #include <FrogEngine/Window.h>
 

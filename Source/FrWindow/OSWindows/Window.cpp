@@ -1,40 +1,58 @@
-#include <FrSTD/Utility.h>
-#ifdef FR_WINDOWS
+#include <FrogEngine/Utility.h>
+#ifdef FR_OS_WINDOWS
+
+#ifdef FR_RELEASE
+#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+#endif
+
 #include <Windows.h>
 
 #include <FrogEngine/Icon.h>
 #include <FrogEngine/Log.h>
 #include <FrogEngine/Window.h>
 
-#include "Windows.h"
+inline LRESULT CALLBACK windowProc(
+    const HWND h_window, const UINT u_message, const WPARAM w_param, const LPARAM l_param) {
+    FrogEngine::Window* window = nullptr;
+
+    if (u_message == WM_NCCREATE) {
+        const auto cs = (CREATESTRUCTA*)l_param; // NOLINT
+        window        = (FrogEngine::Window*)cs->lpCreateParams;
+
+        SetWindowLongPtrA(h_window, GWLP_USERDATA, (LONG_PTR)window);
+    } else {
+        window = (FrogEngine::Window*)GetWindowLongPtrA(h_window, GWLP_USERDATA); // NOLINT
+    }
+
+    switch (u_message) {
+        case WM_CLOSE           : DestroyWindow(h_window); break;
+        case WM_DESTROY         : PostQuitMessage(0); break;
+        case WM_WINDOWPOSCHANGED: window->updateWindowsRect(); break;
+        case WM_CHAR            : window->handleTextEvents(w_param); break;
+        case WM_KEYDOWN         : window->handleKeyEvents(w_param, true); break;
+        case WM_KEYUP           : window->handleKeyEvents(w_param, false); break;
+        case WM_SYSKEYDOWN      : window->handleKeyEvents(w_param, true); return 0;
+        case WM_SYSKEYUP        : window->handleKeyEvents(w_param, false); return 0;
+        case WM_LBUTTONDOWN     : window->handleMouseEvents(FrogEngine::MOUSE_LEFT, true); break;
+        case WM_LBUTTONUP       : window->handleMouseEvents(FrogEngine::MOUSE_LEFT, false); break;
+        case WM_RBUTTONDOWN     : window->handleMouseEvents(FrogEngine::MOUSE_RIGHT, true); break;
+        case WM_RBUTTONUP       : window->handleMouseEvents(FrogEngine::MOUSE_RIGHT, false); break;
+        case WM_MBUTTONDOWN     : window->handleMouseEvents(FrogEngine::MOUSE_MIDDLE, true); break;
+        case WM_MBUTTONUP       : window->handleMouseEvents(FrogEngine::MOUSE_MIDDLE, false); break;
+        case WM_SYSCOMMAND:
+            if (w_param == SC_KEYMENU) return 0;
+        default: break;
+    }
+
+    return DefWindowProc(h_window, u_message, w_param, l_param);
+}
 
 namespace FrogEngine {
-    Window::Window(const char* class_name) : className(class_name) {
-        if (!SetProcessDPIAware())
-            logWarning("WINDOWS: Failed to set DPI awareness: %lx", GetLastError());
-
-        osWindow = (OsWindow*)malloc(sizeof(OsWindow));
-        if (!osWindow) logError("Failed to allocate OsWindow");
-        *osWindow = OsWindow {};
-
-        osWindow->windowClass.cbSize        = sizeof(WNDCLASSEXA);
-        osWindow->windowClass.lpszClassName = className;
-        osWindow->windowClass.hInstance     = osWindow->hInstance;
-        osWindow->windowClass.hCursor       = LoadCursorA(nullptr, IDC_ARROW);
-        osWindow->windowClass.lpfnWndProc   = windowProc;
-        osWindow->windowClass.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
-
-        HICON icon = LoadIconA(osWindow->hInstance, MAKEINTRESOURCE(APP_ICON));
-        if (!icon) logError("WINDOWS: Failed to load icon: %lx", GetLastError());
-        osWindow->windowClass.hIcon   = icon;
-        osWindow->windowClass.hIconSm = icon;
-
-        logInfo("WINDOWS: Window Class Registered");
-        logInfo("  Name: %s", className);
-
-        if (!RegisterClassExA(&osWindow->windowClass))
-            logError("WINDOWS: Failed to register window class: %lx", GetLastError());
-    }
+    struct OsWindow {
+        WNDCLASSEXA windowClass { 0 };
+        HINSTANCE   hInstance { GetModuleHandleA(nullptr) };
+        HWND        hWindow {};
+    };
 
     Window::Window() {
         if (!SetProcessDPIAware())
@@ -43,19 +61,6 @@ namespace FrogEngine {
         osWindow = (OsWindow*)malloc(sizeof(OsWindow));
         if (!osWindow) logError("Failed to allocate OsWindow");
         *osWindow = OsWindow {};
-
-        osWindow->windowClass.cbSize        = sizeof(WNDCLASSEXA);
-        osWindow->windowClass.lpszClassName = className;
-        osWindow->windowClass.hInstance     = osWindow->hInstance;
-        osWindow->windowClass.hCursor       = LoadCursorA(nullptr, IDC_ARROW);
-        osWindow->windowClass.lpfnWndProc   = windowProc;
-        osWindow->windowClass.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
-
-        logInfo("WINDOWS: Window Class Registered");
-        logInfo("  Name: %s", className);
-
-        if (!RegisterClassExA(&osWindow->windowClass))
-            logError("WINDOWS: Failed to register window class: %lx", GetLastError());
     }
 
     Window::~Window() {
@@ -65,8 +70,42 @@ namespace FrogEngine {
         free(osWindow);
     }
 
-    void Window::init(const WindowInfo* window_info) {
-        windowInfo = *window_info;
+    void Window::init(const char* class_name) {
+        if (GetClassInfoExA(osWindow->hInstance, className, &osWindow->windowClass)) {
+            logWarning("WINDOWS: init() called after initialization");
+            return;
+        }
+
+        className = class_name;
+
+        osWindow->windowClass.cbSize        = sizeof(WNDCLASSEXA);
+        osWindow->windowClass.lpszClassName = className;
+        osWindow->windowClass.hInstance     = osWindow->hInstance;
+        osWindow->windowClass.hCursor       = LoadCursorA(nullptr, IDC_ARROW);
+        osWindow->windowClass.lpfnWndProc   = windowProc;
+        osWindow->windowClass.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+
+        HICON icon = LoadIconA(osWindow->hInstance, MAKEINTRESOURCE(APP_ICON));
+        if (!icon) logWarning("WINDOWS: Failed to load icon: %lx", GetLastError());
+        else {
+            osWindow->windowClass.hIcon   = icon;
+            osWindow->windowClass.hIconSm = icon;
+        }
+
+        logInfo("WINDOWS: Window Class Registered");
+        logInfo("  Name: %s", className);
+
+        if (!RegisterClassExA(&osWindow->windowClass))
+            logError("WINDOWS: Failed to register window class: %lx", GetLastError());
+    }
+    void Window::open(const WindowInfo* window_info) {
+        if (osWindow->hWindow) {
+            logWarning("WINDOWS: open() called after open");
+            return;
+        }
+
+        if (!window_info) windowInfo = {};
+        else windowInfo = *window_info;
 
         DWORD style { WS_VISIBLE };
 

@@ -33,16 +33,19 @@ endif()
 # Files for Library
 # =========================
 add_library(FrogEngine
-        Include/FrogEngine/Window.h
-        Include/FrogEngine/Log.h
+        Include/FrogEngine/Allocator.h
         Include/FrogEngine/Icon.h
-        Include/FrSTD/Utility.h
-        Source/FrWindow/Windows/Windows.h
-        Source/FrWindow/Windows/Window.cpp
-        Source/FrWindow/Windows/KeyInput.cpp
-        Source/FrWindow/Windows/TextInput.cpp
-        Source/FrWindow/Windows/MouseInput.cpp
+        Include/FrogEngine/Log.h
+        Include/FrogEngine/Save.h
+        Include/FrogEngine/Utility.h
+        Include/FrogEngine/Window.h
+        Source/FrAllocator/Allocator.cpp
         Source/FrLog/Log.cpp
+        Source/FrSave/Save.cpp
+        Source/FrWindow/OSWindows/Window.cpp
+        Source/FrWindow/OSWindows/KeyInput.cpp
+        Source/FrWindow/OSWindows/TextInput.cpp
+        Source/FrWindow/OSWindows/MouseInput.cpp
 )
 
 

@@ -1,8 +1,8 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#include <FrSTD/Utility.h>
 #include <FrogEngine/Log.h>
+#include <FrogEngine/Utility.h>
 
 namespace FrogEngine {
     void logInfo(const char* format, ...) {
@@ -30,7 +30,7 @@ namespace FrogEngine {
     }
 }
 
-#ifdef FR_WINDOWS
+#ifdef FR_OS_WINDOWS
 #include <Windows.h>
 
 namespace FrogEngine {

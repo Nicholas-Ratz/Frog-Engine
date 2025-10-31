@@ -2,7 +2,7 @@
 #define FROGENGINE_UTILITY_H
 
 #ifdef _WIN32
-#define FR_WINDOWS
+#define FR_OS_WINDOWS
 #endif
 
 #ifndef NDEBUG
