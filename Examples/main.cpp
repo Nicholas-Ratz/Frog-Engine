@@ -1,9 +1,13 @@
 #include <stdio.h>
 
 #include <FrogEngine/Allocator.h>
+#include <FrogEngine/Save.h>
 #include <FrogEngine/Window.h>
 
 int main() {
+    FrogEngine::Save save;
+    save.init("FROG ENGINE GAME");
+
     FrogEngine::Window window;
     window.init("FROG-GAME");
 

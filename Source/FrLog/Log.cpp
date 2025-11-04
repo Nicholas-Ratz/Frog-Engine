@@ -31,22 +31,31 @@ namespace FrogEngine {
 }
 
 #ifdef FR_OS_WINDOWS
-#include <Windows.h>
+#    include <Windows.h>
 
 namespace FrogEngine {
     void logError(const char* format, ...) {
-#ifdef FR_DEBUG
+#    ifdef FR_DEBUG
         char* args;
 
         va_start(args, format);
-        fprintf(stderr, "[ERROR] ");
-        vfprintf(stderr, format, args);
-        fprintf(stderr, "\n");
+        int length = vsnprintf(0, 0, format, args);
         va_end(args);
-#endif
+        if (length >= 0) {
+            char* str = (char*)malloc(length + 10);
+            if (str) {
+                va_start(args, format);
+                vsnprintf(str + 8, length + 1, format, args);
+                va_end(args);
+                memcpy(str, "[ERROR] ", 8);
+                str[8 + length] = '\n';
+                str[9 + length] = 0;
 
-        MessageBoxA(nullptr, format, "Error", MB_OK | MB_ICONERROR);
-
+                MessageBoxA(nullptr, str, "Error", MB_OK | MB_ICONERROR);
+                free(str);
+            }
+        }
+#    endif
         exit(-1);
     }
 }

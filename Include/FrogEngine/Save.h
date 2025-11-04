@@ -4,14 +4,16 @@
 #include <FrogEngine/Utility.h>
 
 namespace FrogEngine {
-    struct EngineData {};
+    struct EngineData {
+        u32 version { 1 };
+    };
 
-    class Save {
+    class FROGENGINE_MODULE Save {
       public:
         Save();
         ~Save();
 
-        void init(char* name);
+        void init(const char* name);
         void clear();
 
         void load(const ptr data, usize length);
@@ -21,7 +23,9 @@ namespace FrogEngine {
         void write(const char* file);
 
       private:
-        u64        id {};
+        u32        id {};
+        char*      configPath { nullptr };
+        char*      filePath { nullptr };
         ptr        data { nullptr };
         usize      length {};
         EngineData engineData {};

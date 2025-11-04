@@ -1,14 +1,21 @@
 #ifndef FROGENGINE_UTILITY_H
 #define FROGENGINE_UTILITY_H
 
-#ifdef _WIN32
-#define FR_OS_WINDOWS
+#if defined(_WIN32) || defined(_WIN64)
+#    define FR_OS_WINDOWS
+#    ifdef FrogEngine_EXPORTS
+#        define FROGENGINE_MODULE __declspec(dllexport)
+#    else
+#        define FROGENGINE_MODULE __declspec(dllimport)
+#    endif
+#else
+#    define FROGENGINE_API
 #endif
 
 #ifndef NDEBUG
-#define FR_DEBUG
+#    define FR_DEBUG
 #else
-#define FR_RELEASE
+#    define FR_RELEASE
 #endif
 #include <stdint.h>
 

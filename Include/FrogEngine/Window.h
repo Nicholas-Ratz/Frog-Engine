@@ -14,7 +14,7 @@
 #include <FrogEngine/Utility.h>
 
 #ifdef FR_OS_WINDOWS
-#include <Windows.h>
+#    include <Windows.h>
 #endif
 
 namespace FrogEngine {
@@ -65,7 +65,7 @@ namespace FrogEngine {
      * @note Currently only Windows is supported, but more support may come in the future.
      * @see WindowInfo
      */
-    class Window {
+    class FROGENGINE_MODULE Window {
       public:
         /**
          * @brief Default constructor.
@@ -296,7 +296,7 @@ namespace FrogEngine {
         void updateWindowsRect();
 
       private:
-        const char* className { nullptr };
+        char className[256] = { 0 };
 
         WindowInfo windowInfo {};
 

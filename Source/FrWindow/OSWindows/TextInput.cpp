@@ -1,28 +1,28 @@
 #include <FrogEngine/Utility.h>
 
 #ifdef FR_OS_WINDOWS
-#include <Windows.h>
+#    include <Windows.h>
 
-#include <FrogEngine/Log.h>
-#include <FrogEngine/Window.h>
+#    include <FrogEngine/Log.h>
+#    include <FrogEngine/Window.h>
 
 namespace FrogEngine {
     void Window::startTextInput() {
         textInputEnabled = true;
-        logInfo("Text Input Activated");
+        logInfo("WINDOW: Text Input Activated");
     }
     void Window::stopTextInput() {
         textInputEnabled = false;
-        logInfo("Text Input Deactivated");
+        logInfo("WINDOW: Text Input Deactivated");
     }
     void Window::loadTextInput(const char* text, const u32 size) {
         const usize buffer_size = TEXT_INPUT_BUFFER_SIZE * (size / TEXT_INPUT_BUFFER_SIZE + 1);
         textInputBuffer.load(text, buffer_size, size);
-        logInfo("Text Input Loaded");
+        logInfo("WINDOW: Text Input Loaded");
     }
     void Window::clearTextInput() {
         textInputBuffer.reset(TEXT_INPUT_BUFFER_SIZE);
-        logInfo("Text Input Cleared");
+        logInfo("WINDOW: Text Input Cleared");
     }
     const char* Window::getText() const { return textInputBuffer.data(); }
     bool        Window::isTextInputEnabled() const { return textInputEnabled; }

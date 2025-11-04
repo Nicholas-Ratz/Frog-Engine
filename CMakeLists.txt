@@ -1,59 +1,62 @@
-cmake_minimum_required(VERSION 4.0)
-project(FrogEngine)
+cmake_minimum_required(VERSION 3.14)
+project(FrogEngine LANGUAGES CXX)
+
 
 # =========================
 # Set CMake Settings
 # =========================
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS OFF)
 
 
 # =========================
-# Compiler Flags
+# Apply optimizations
 # =========================
-set(CMAKE_CXX_FLAGS "-nostdlib -D_DLL -D_MT")
-set(CMAKE_C_FLAGS "-nostdlib -D_DLL -D_MT")
-set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -Xclang -gcodeview")
-set(CMAKE_C_FLAGS_DEBUG "-O0 -g -Xclang -gcodeview")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -flto -DNDEBUG")
-set(CMAKE_C_FLAGS_RELEASE "-O3 -flto -DNDEBUG")
-
-
-# =========================
-# Linker Optimizations for Release
-# =========================
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -flto -fuse-ld=lld -Wl,/OPT:REF,/OPT:ICF")
-    set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} -flto -fuse-ld=lld -Wl,/OPT:REF,/OPT:ICF")
-    set(CMAKE_STATIC_LINKER_FLAGS_RELEASE "${CMAKE_STATIC_LINKER_FLAGS_RELEASE}")
+add_compile_options(
+    -fno-exceptions
+    -fno-rtti
+    -fno-unwind-tables
+    -fno-asynchronous-unwind-tables
+    -Wno-deprecated
+)
+add_link_options(
+    -nostdlib
+    -nodefaultlibs
+    -fuse-ld=lld
+)
+if (CMAKE_BUILD_TYPE STREQUAL "Release")
+    add_compile_options(
+        -O3
+        -ffast-math
+        -flto=full
+        -DNDEBUG
+    )
 endif()
 
 
 # =========================
 # Files for Library
 # =========================
-add_library(FrogEngine
-        Include/FrogEngine/Allocator.h
-        Include/FrogEngine/Icon.h
-        Include/FrogEngine/Log.h
-        Include/FrogEngine/Save.h
-        Include/FrogEngine/Utility.h
-        Include/FrogEngine/Window.h
-        Source/FrAllocator/Allocator.cpp
-        Source/FrLog/Log.cpp
-        Source/FrSave/Save.cpp
-        Source/FrWindow/OSWindows/Window.cpp
-        Source/FrWindow/OSWindows/KeyInput.cpp
-        Source/FrWindow/OSWindows/TextInput.cpp
-        Source/FrWindow/OSWindows/MouseInput.cpp
+add_library(FrogEngine SHARED 
+    Source/FrAllocator/Allocator.cpp
+    Source/FrLog/Log.cpp
+    Source/FrSave/OSWindows/Read.cpp
+    Source/FrSave/OSWindows/Save.cpp
+    Source/FrSave/OSWindows/Write.cpp
+    Source/FrWindow/OSWindows/Window.cpp
+    Source/FrWindow/OSWindows/KeyInput.cpp
+    Source/FrWindow/OSWindows/TextInput.cpp
+    Source/FrWindow/OSWindows/MouseInput.cpp
 )
 
 
 # =========================
 # Include Directories
 # =========================
-target_include_directories(FrogEngine
-        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Include)
+target_include_directories(FrogEngine PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>
+)
 
 
 # =========================
@@ -64,13 +67,19 @@ target_link_libraries(FrogEngine Vulkan::Vulkan)
 
 
 # =========================
+# Set compiler defintions
+# =========================
+target_compile_definitions(FrogEngine PRIVATE FrogEngine_EXPORTS)
+
+
+# =========================
 # Files for Example
 # =========================
 project(Example)
 add_executable(Example
-        Examples/main.cpp
-        Examples/App.rc
-    )
+    Examples/main.cpp
+    Examples/App.rc
+)
 
 
 # =========================
@@ -80,8 +89,20 @@ target_link_libraries(Example FrogEngine)
 
 
 # =========================
+# Prevent terminal
+# =========================
+if (CMAKE_BUILD_TYPE STREQUAL "Release")
+    target_link_options(Example PRIVATE
+        -Wl,/SUBSYSTEM:WINDOWS
+        -Wl,/ENTRY:mainCRTStartup
+    )
+endif()
+
+
+# =========================
 # Installing for distribution
 # =========================
-set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/Install" CACHE PATH "Installation directory" FORCE)
-install(TARGETS Example DESTINATION .)
-install(TARGETS FrogEngine DESTINATION bin)
+set(INSTALL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Install")
+install(TARGETS Example FrogEngine
+    RUNTIME DESTINATION ${INSTALL_DIR}
+)

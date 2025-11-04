@@ -2,7 +2,7 @@
 
 #ifdef FR_OS_WINDOWS
 
-#include <FrogEngine/Window.h>
+#    include <FrogEngine/Window.h>
 
 constexpr u8 KEY_MAP[256] = {
     255, 255, 255, 255, 255, 255, 255, 255, // 8
