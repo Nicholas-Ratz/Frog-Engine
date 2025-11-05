@@ -10,18 +10,19 @@
 #ifndef FROGENGINE_WINDOW_H
 #define FROGENGINE_WINDOW_H
 
-#include <FrogEngine/Allocator.h>
 #include <FrogEngine/Utility.h>
 
 #ifdef FR_OS_WINDOWS
 #    include <Windows.h>
+#    define APP_ICON 888
 #endif
 
 namespace FrogEngine {
     struct OsWindow;
+    class Allocator;
+    class Block;
 
-    constexpr usize TEXT_INPUT_BUFFER_SIZE { 256 };
-    constexpr u32   MAX_INPUT_POLLING { 16 };
+    constexpr u32 MAX_INPUT_POLLING { 16 };
 
     /**
      * @enum WindowStyle
@@ -77,7 +78,7 @@ namespace FrogEngine {
          *
          * @see init() open()
          */
-        Window();
+        explicit Window(Allocator* allocator);
         /**
          * @brief Destructor.
          *
@@ -296,7 +297,9 @@ namespace FrogEngine {
         void updateWindowsRect();
 
       private:
-        char className[256] = { 0 };
+        Block* block {};
+
+        char className[128] = { 0 };
 
         WindowInfo windowInfo {};
 
@@ -304,7 +307,8 @@ namespace FrogEngine {
 
         bool textInputEnabled { false };
 
-        FrogEngine::Stack<char> textInputBuffer { TEXT_INPUT_BUFFER_SIZE };
+        char* textInput { nullptr };
+        usize textIndex {};
 
         u8  mousePress { 0 };
         u8  mouseDown { 0 };

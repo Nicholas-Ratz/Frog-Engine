@@ -1,14 +1,18 @@
 #include <stdio.h>
 
 #include <FrogEngine/Allocator.h>
+#include <FrogEngine/Log.h>
 #include <FrogEngine/Save.h>
 #include <FrogEngine/Window.h>
 
 int main() {
-    FrogEngine::Save save;
-    save.init("FROG ENGINE GAME");
+    FrogEngine::Allocator allocator;
+    allocator.init("FROGENGINE-GAME");
 
-    FrogEngine::Window window;
+    FrogEngine::Save save(&allocator);
+    save.init();
+
+    FrogEngine::Window window(&allocator);
     window.init("FROG-GAME");
 
     constexpr FrogEngine::WindowInfo WINDOW_INFO {
@@ -20,6 +24,7 @@ int main() {
     window.startTextInput();
 
     while (window.pollEvents()) {
+        allocator.check();
         if (window.getKeyPress() & FrogEngine::KEY_ESCAPE) {
             window.close();
             break;

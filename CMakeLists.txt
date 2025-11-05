@@ -39,7 +39,8 @@ endif()
 # Files for Library
 # =========================
 add_library(FrogEngine SHARED 
-    Source/FrAllocator/Allocator.cpp
+    Source/FrAllocator/OSWindows/Allocator.cpp
+    Source/FrAllocator/OSWindows/Block.cpp
     Source/FrLog/Log.cpp
     Source/FrSave/OSWindows/Read.cpp
     Source/FrSave/OSWindows/Save.cpp
@@ -80,7 +81,6 @@ add_executable(Example
     Examples/main.cpp
     Examples/App.rc
 )
-
 
 # =========================
 # Link with Frog-Engine

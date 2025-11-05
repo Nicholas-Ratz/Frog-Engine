@@ -4,7 +4,7 @@
 
 #    include <Windows.h>
 
-#    include <FrogEngine/Icon.h>
+#    include <FrogEngine/Allocator.h>
 #    include <FrogEngine/Log.h>
 #    include <FrogEngine/Window.h>
 
@@ -47,21 +47,21 @@ inline LRESULT CALLBACK windowProc(
 namespace FrogEngine {
     struct OsWindow {
         WNDCLASSEXA windowClass { 0 };
-        HINSTANCE   hInstance { GetModuleHandleA(nullptr) };
+        HINSTANCE   hInstance {};
         HWND        hWindow {};
     };
 
-    Window::Window() {
-        osWindow = (OsWindow*)malloc(sizeof(OsWindow));
-        if (!osWindow) logError("WINDOW: Failed to allocate OsWindow");
-        *osWindow = OsWindow {};
+    Window::Window(Allocator* allocator) {
+        block = allocator->getWindowBlock();
+
+        osWindow  = (OsWindow*)block->alloc(sizeof(OsWindow));
+        textInput = (char*)block->alloc(1'024);
     }
 
     Window::~Window() {
         if (!UnregisterClassA(className, osWindow->hInstance))
             logError("WINDOW: Failed to unregister window class: %lx", GetLastError());
         logInfo("WINDOW: Window Class Unregistered");
-        free(osWindow);
     }
 
     void Window::init(const char* class_name) {
@@ -73,8 +73,10 @@ namespace FrogEngine {
         if (!SetProcessDPIAware())
             logWarning("WINDOW: Failed to set DPI awareness: %lx", GetLastError());
 
-        strncpy(className, class_name, 255);
-        className[255] = 0;
+        osWindow->hInstance = GetModuleHandleA(nullptr);
+
+        strncpy(className, class_name, 128);
+        className[127] = 0;
 
         osWindow->windowClass.cbSize        = sizeof(WNDCLASSEXA);
         osWindow->windowClass.lpszClassName = className;
@@ -83,8 +85,8 @@ namespace FrogEngine {
         osWindow->windowClass.lpfnWndProc   = windowProc;
         osWindow->windowClass.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
 
-        HICON icon = LoadIconA(osWindow->hInstance, MAKEINTRESOURCE(APP_ICON));
-        if (!icon) logWarning("WINDOW: Failed to load icon: %lx", GetLastError());
+        HICON icon = LoadIconA(osWindow->hInstance, MAKEINTRESOURCEA(APP_ICON));
+        if (!icon) logWarning("WINDOW: Failed to load icon: %lu", GetLastError());
         else {
             osWindow->windowClass.hIcon   = icon;
             osWindow->windowClass.hIconSm = icon;

@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include <FrogEngine/Utility.h>
 
 #ifdef FR_OS_WINDOWS
@@ -16,15 +18,23 @@ namespace FrogEngine {
         logInfo("WINDOW: Text Input Deactivated");
     }
     void Window::loadTextInput(const char* text, const u32 size) {
-        const usize buffer_size = TEXT_INPUT_BUFFER_SIZE * (size / TEXT_INPUT_BUFFER_SIZE + 1);
-        textInputBuffer.load(text, buffer_size, size);
+        if (size < 1'023) {
+            memcpy(textInput, text, size);
+            *(char*)((uptr)textInput + size) = 0;
+            textIndex                        = size;
+        } else if (size >= 1'024) {
+            memcpy(textInput, text, 1'024);
+            logWarning("WINDOW: New text buffer larger than 1024");
+            *(char*)((uptr)textInput + 1'024) = 0;
+            textIndex                         = 1'024;
+        }
         logInfo("WINDOW: Text Input Loaded");
     }
     void Window::clearTextInput() {
-        textInputBuffer.reset(TEXT_INPUT_BUFFER_SIZE);
+        memset(textInput, 0, 1'024);
         logInfo("WINDOW: Text Input Cleared");
     }
-    const char* Window::getText() const { return textInputBuffer.data(); }
+    const char* Window::getText() const { return textInput; }
     bool        Window::isTextInputEnabled() const { return textInputEnabled; }
 
     void Window::handleTextEvents(const u32 character) {
@@ -35,9 +45,29 @@ namespace FrogEngine {
         WideCharToMultiByte(CP_UTF8, 0, &wide_character, 1, &char_character, 1, nullptr, nullptr);
 
         switch (char_character) {
-            case '\r': textInputBuffer.push('\n'); break;
-            case '\b': textInputBuffer.pop(); break;
-            default  : textInputBuffer.push(char_character); break;
+            case '\r': {
+                if (textIndex >= 1'024) {
+                    logWarning("WINDOW: Text input cannot be more than 1024 characters");
+                    break;
+                }
+                textInput[textIndex] = '\n';
+                textIndex++;
+                break;
+            }
+            case '\b': {
+                if (textIndex > 0) textIndex--;
+                textInput[textIndex] = 0;
+                break;
+            }
+            default: {
+                if (textIndex >= 1'024) {
+                    logWarning("WINDOW: Text input cannot be more than 1024 characters");
+                    break;
+                }
+                textInput[textIndex] = char_character;
+                textIndex++;
+                break;
+            }
         }
     }
 }

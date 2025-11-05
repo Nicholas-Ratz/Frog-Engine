@@ -1,10 +1,12 @@
 #ifndef FROGENGINE_LOG_H
 #define FROGENGINE_LOG_H
 
+#include <FrogEngine/Utility.h>
+
 namespace FrogEngine {
-    void logInfo(const char* format, ...);
-    void logWarning(const char* format, ...);
-    void logError(const char* format, ...);
+    void FROGENGINE_MODULE logInfo(const char* format, ...);
+    void FROGENGINE_MODULE logWarning(const char* format, ...);
+    void FROGENGINE_MODULE logError(const char* format, ...);
 }
 
 #endif

@@ -9,7 +9,7 @@
 #        define FROGENGINE_MODULE __declspec(dllimport)
 #    endif
 #else
-#    define FROGENGINE_API
+#    define FROGENGINE_MODULE
 #endif
 
 #ifndef NDEBUG
