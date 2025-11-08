@@ -20,13 +20,13 @@ namespace FrogEngine {
     void Window::loadTextInput(const char* text, const u32 size) {
         if (size < 1'023) {
             memcpy(textInput, text, size);
-            *(char*)((uptr)textInput + size) = 0;
-            textIndex                        = size;
+            textInput[size] = '\0';
+            textIndex       = size;
         } else if (size >= 1'024) {
             memcpy(textInput, text, 1'024);
             logWarning("WINDOW: New text buffer larger than 1024");
-            *(char*)((uptr)textInput + 1'024) = 0;
-            textIndex                         = 1'024;
+            textInput[1'024] = '\0';
+            textIndex        = 1'024;
         }
         logInfo("WINDOW: Text Input Loaded");
     }
@@ -56,7 +56,7 @@ namespace FrogEngine {
             }
             case '\b': {
                 if (textIndex > 0) textIndex--;
-                textInput[textIndex] = 0;
+                textInput[textIndex] = '\0';
                 break;
             }
             default: {

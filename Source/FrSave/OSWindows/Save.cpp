@@ -15,8 +15,8 @@ namespace FrogEngine {
         block = allocate->getSaveBlock();
         id    = allocate->getID();
 
-        configPath = (char*)block->alloc(512);
-        filePath   = (char*)block->alloc(512);
+        configPath = block->alloc(512);
+        filePath   = block->alloc(512);
     }
     Save::~Save() {}
 
@@ -31,43 +31,43 @@ namespace FrogEngine {
         if (snprintf(configPath, 512, "%s\\FrogEngine", local_path) >= 512)
             logError("SAVE: FrogEngine save path too long");
         if (mkdir(configPath) != 0 && errno != EEXIST)
-            logError("SAVE: Failed to create directory at %s", configPath);
+            logError("SAVE: Failed to create directory at %s", configPath.get());
 
         if (snprintf(configPath, 512, "%s\\FrogEngine\\%u", local_path, id) >= 512)
             logError("SAVE: Game save path too long");
         if (mkdir(configPath) != 0 && errno != EEXIST)
-            logError("SAVE: Failed to create directory at %s", configPath);
+            logError("SAVE: Failed to create directory at %s", configPath.get());
+        if (errno != EEXIST) logInfo("SAVE: Created path at %s", configPath.get());
 
-        logInfo("SAVE: Created path at %s", configPath);
-
-        snprintf(filePath, 512, "%s\\engine.cache", configPath);
+        snprintf(filePath, 512, "%s\\engine.cache", (char*)configPath.get());
 
         FILE* file = fopen(filePath, "rb");
         if (!file) {
-            if (errno != ENOENT) logError("SAVE: Failed to read %s. Code %i\n", filePath, errno);
+            if (errno != ENOENT)
+                logError("SAVE: Failed to read %s. Code %i\n", filePath.get(), errno);
 
             engineCache = {};
             file        = fopen(filePath, "wb");
             if (!file || fwrite(&engineCache, sizeof(EngineCache), 1, file) != 1)
-                logError("SAVE: Failed to write %s. Code %i", filePath, errno);
+                logError("SAVE: Failed to write %s. Code %i", filePath.get(), errno);
             fclose(file);
-            logInfo("SAVE: Created file %s", filePath);
+            logInfo("SAVE: Created file %s", filePath.get());
             return;
         }
 
         if (fread(&engineCache, sizeof(EngineCache), 1, file) != 1) {
             fclose(file);
-            logWarning("SAVE: Failed to read %s. Code %i", filePath, errno);
+            logWarning("SAVE: Failed to read %s. Code %i", filePath.get(), errno);
             logWarning("  Rewriting file");
             remove(filePath);
             engineCache = {};
             file        = fopen(filePath, "wb");
             if (!file || fwrite(&engineCache, sizeof(EngineCache), 1, file) != 1)
-                logError("SAVE: Failed to write %s. Code %i", filePath, errno);
+                logError("SAVE: Failed to write %s. Code %i", filePath.get(), errno);
             fclose(file);
         } else {
             fclose(file);
-            logInfo("SAVE: Opened file %s", filePath);
+            logInfo("SAVE: Opened file %s", filePath.get());
             EngineCache current = {};
             if (engineCache.version != current.version) {
                 logWarning(
@@ -78,11 +78,11 @@ namespace FrogEngine {
                 engineCache = {};
                 file        = fopen(filePath, "wb");
                 if (!file || fwrite(&engineCache, sizeof(EngineCache), 1, file) != 1)
-                    logError("SAVE: Failed to write %s. Code %i", filePath, errno);
+                    logError("SAVE: Failed to write %s. Code %i", filePath.get(), errno);
                 fclose(file);
             }
         }
-        logInfo("SAVE: Closed file %s", filePath);
+        logInfo("SAVE: Closed file %s", filePath.get());
     }
 }
 

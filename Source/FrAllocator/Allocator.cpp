@@ -30,10 +30,12 @@ namespace FrogEngine {
         if (!path) logError("ALLOCATOR: Failed to allocate path");
         memset(path, 0, 512);
 
+#    ifdef FR_OS_WINDOWS
         const char* local = getenv("LOCALAPPDATA");
         if (!local) logError("ALLOCATOR: Failed to retrieve LOCALAPPDATA");
         id = generateHash(name);
         snprintf(path, 512, "%s\\FrogEngine\\%u\\engine.cache", local, id);
+#    endif
 
         logInfo("ALLOCATOR: Generated App ID");
         logInfo("  ID: %u", id);

@@ -1,5 +1,7 @@
 #include <FrogEngine/Allocator.h>
 #include <FrogEngine/Log.h>
+#include <FrogEngine/Pointer.h>
+#include <FrogEngine/Utility.h>
 
 namespace FrogEngine {
     Block::Block(Allocator* _allocator) : allocator(_allocator) {}
@@ -19,15 +21,22 @@ namespace FrogEngine {
         }
     }
 
-    ptr Block::alloc(usize _size) {
+    Pointer<u8> Block::alloc(usize _size) {
         if (index + _size > size) {
             logError(
                 "ALLOCATOR: Tried to alloc %zu when only %zu is allocated", index + _size, size);
             allocator->abort();
         }
 
-        ptr result  = (ptr)((uptr)buffer + index);
-        index      += _size;
+        Pointer<u8> result(index, (uptr*)&buffer);
+        index += _size;
         return result;
     }
+
+    void Block::setBuffer(ptr _buffer, usize _size) {
+        buffer = _buffer;
+        size   = _size;
+    }
+
+    const ptr Block::getBuffer() const { return buffer; }
 }

@@ -39,8 +39,8 @@ endif()
 # Files for Library
 # =========================
 add_library(FrogEngine SHARED 
-    Source/FrAllocator/OSWindows/Allocator.cpp
-    Source/FrAllocator/OSWindows/Block.cpp
+    Source/FrAllocator/Allocator.cpp
+    Source/FrAllocator/Block.cpp
     Source/FrLog/Log.cpp
     Source/FrSave/OSWindows/Read.cpp
     Source/FrSave/OSWindows/Save.cpp

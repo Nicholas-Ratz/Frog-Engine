@@ -6,10 +6,10 @@
  * It abstracts OS-specific window management and provides a unified interface
  * for window properties, text input, mouse, and keyboard events.
  */
-
 #ifndef FROGENGINE_WINDOW_H
 #define FROGENGINE_WINDOW_H
 
+#include <FrogEngine/Pointer.h>
 #include <FrogEngine/Utility.h>
 
 #ifdef FR_OS_WINDOWS
@@ -303,12 +303,12 @@ namespace FrogEngine {
 
         WindowInfo windowInfo {};
 
-        OsWindow* osWindow { nullptr };
+        Pointer<OsWindow> osWindow;
 
         bool textInputEnabled { false };
 
-        char* textInput { nullptr };
-        usize textIndex {};
+        Pointer<char> textInput;
+        usize         textIndex {};
 
         u8  mousePress { 0 };
         u8  mouseDown { 0 };

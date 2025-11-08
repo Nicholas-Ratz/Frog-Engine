@@ -1,6 +1,7 @@
 #ifndef FROGENGINE_SAVE_H
 #define FROGENGINE_SAVE_H
 
+#include <FrogEngine/Pointer.h>
 #include <FrogEngine/Utility.h>
 
 namespace FrogEngine {
@@ -22,10 +23,10 @@ namespace FrogEngine {
       private:
         Block* block {};
 
-        u32         id {};
-        char*       configPath { nullptr };
-        char*       filePath { nullptr };
-        EngineCache engineCache {};
+        u32           id {};
+        Pointer<char> configPath;
+        Pointer<char> filePath;
+        EngineCache   engineCache {};
 
         ptr   data { nullptr };
         usize dataSize {};

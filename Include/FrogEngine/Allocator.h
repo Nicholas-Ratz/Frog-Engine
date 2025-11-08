@@ -1,11 +1,13 @@
 #ifndef FROGENGINE_ALLOCATOR_H
 #define FROGENGINE_ALLOCATOR_H
 
+#include <FrogEngine/Pointer.h>
 #include <FrogEngine/Utility.h>
 
 namespace FrogEngine {
     class Save;
     class Allocator;
+    class Block;
 
     class Block {
       public:
@@ -15,7 +17,11 @@ namespace FrogEngine {
         void init(ptr _buffer, usize _size);
         void check();
 
-        ptr alloc(usize _size);
+        Pointer<u8> alloc(usize _size);
+
+        void setBuffer(ptr _buffer, usize _size);
+
+        const ptr getBuffer() const;
 
       private:
         Allocator* allocator { nullptr };
