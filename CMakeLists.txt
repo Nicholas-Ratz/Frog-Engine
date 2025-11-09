@@ -19,6 +19,7 @@ add_compile_options(
     -fno-unwind-tables
     -fno-asynchronous-unwind-tables
     -Wno-deprecated
+    #-D__SHARED__
 )
 add_link_options(
     -nostdlib
@@ -38,13 +39,13 @@ endif()
 # =========================
 # Files for Library
 # =========================
-add_library(FrogEngine SHARED 
+add_library(FrogEngine #SHARED 
     Source/FrAllocator/Allocator.cpp
     Source/FrAllocator/Block.cpp
     Source/FrLog/Log.cpp
-    Source/FrSave/OSWindows/Read.cpp
-    Source/FrSave/OSWindows/Save.cpp
-    Source/FrSave/OSWindows/Write.cpp
+    Source/FrSave/Read.cpp
+    Source/FrSave/Save.cpp
+    Source/FrSave/Write.cpp
     Source/FrWindow/OSWindows/Window.cpp
     Source/FrWindow/OSWindows/KeyInput.cpp
     Source/FrWindow/OSWindows/TextInput.cpp
@@ -102,7 +103,6 @@ endif()
 # =========================
 # Installing for distribution
 # =========================
-set(INSTALL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Install")
 install(TARGETS Example FrogEngine
-    RUNTIME DESTINATION ${INSTALL_DIR}
+    RUNTIME DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/Install"
 )

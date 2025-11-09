@@ -13,7 +13,7 @@ namespace FrogEngine {
         usize allocatorCache[3] { 3'072, 1'024, 2'048 };
     };
 
-    class FROGENGINE_MODULE Save {
+    class FROGENGINE_EXPORT Save {
       public:
         Save(Allocator* allocator);
         ~Save();

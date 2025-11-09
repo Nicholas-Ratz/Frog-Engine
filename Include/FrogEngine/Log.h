@@ -26,7 +26,7 @@ namespace FrogEngine {
      * @param format Null-terminated format string (printf-style).
      * @param ...   Variable arguments matching the format specifiers.
      */
-    void FROGENGINE_MODULE logInfo(const char* format, ...);
+    void FROGENGINE_EXPORT logInfo(const char* format, ...);
     /**
      * @brief Logs a warning message.
      *
@@ -36,7 +36,7 @@ namespace FrogEngine {
      * @param format Null-terminated format string (printf-style).
      * @param ...   Variable arguments matching the format specifiers.
      */
-    void FROGENGINE_MODULE logWarning(const char* format, ...);
+    void FROGENGINE_EXPORT logWarning(const char* format, ...);
     /**
      * @brief Logs an error message.
      *
@@ -48,7 +48,7 @@ namespace FrogEngine {
      *
      * @note If called app will cleanly exit and abort.
      */
-    void FROGENGINE_MODULE logError(const char* format, ...);
+    void FROGENGINE_EXPORT logError(const char* format, ...);
 }
 
 #endif

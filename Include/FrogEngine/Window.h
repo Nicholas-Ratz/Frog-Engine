@@ -66,7 +66,7 @@ namespace FrogEngine {
      * @note Currently only Windows is supported, but more support may come in the future.
      * @see WindowInfo
      */
-    class FROGENGINE_MODULE Window {
+    class FROGENGINE_EXPORT Window {
       public:
         /**
          * @brief Default constructor.
@@ -195,6 +195,11 @@ namespace FrogEngine {
          * @note Pointer directly connected to internal Text buffer.
          */
         const char* getText() const;
+        /**
+         * @brief Gets length of the text input buffer.
+         * @return Length in bytes/chars of text.
+         */
+        usize       getTextLength() const;
         /**
          * @brief Checks if text input is currently active.
          * @return true if text input is enabled

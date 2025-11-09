@@ -3,13 +3,28 @@
 
 #if defined(_WIN32) || defined(_WIN64)
 #    define FR_OS_WINDOWS
-#    ifdef FrogEngine_EXPORTS
-#        define FROGENGINE_MODULE __declspec(dllexport)
+#elif defined(__linux__) || defined(linux) || defined(__linux)
+#    define FR_OS_LINUX
+#elif defined(__APPLE__) && defined(__MACH__)
+#    include <TargetConditional.h>
+#    if TARGET_OS_MAC == 1
+#        define FR_OS_MAC
+#    endif
+#endif
+
+#if defined(__SHARED__)
+#    if defined(_WIN32) || defined(_WIN64)
+#        define FROGENGINE_EXPORT __declspec(dllexport)
+#        define FROGENGINE_IMPORT __declspec(dllimport)
+#        define FR_SHARED
 #    else
-#        define FROGENGINE_MODULE __declspec(dllimport)
+#        define FROGENGINE_EXPORT __attribute__((visibility("default")))
+#        define FROGENGINE_IMPORT __attribute__((visibility("default")))
+#        define FR_SHARED
 #    endif
 #else
-#    define FROGENGINE_MODULE
+#    define FROGENGINE_EXPORT
+#    define FROGENGINE_IMPORT
 #endif
 
 #ifndef NDEBUG
@@ -17,6 +32,7 @@
 #else
 #    define FR_RELEASE
 #endif
+
 #include <stdint.h>
 
 typedef int8_t  i8;

@@ -31,7 +31,7 @@ namespace FrogEngine {
         uptr  index {};
     };
 
-    class FROGENGINE_MODULE Allocator {
+    class FROGENGINE_EXPORT Allocator {
       public:
         Allocator();
         ~Allocator();

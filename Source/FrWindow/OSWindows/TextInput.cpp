@@ -35,6 +35,7 @@ namespace FrogEngine {
         logInfo("WINDOW: Text Input Cleared");
     }
     const char* Window::getText() const { return textInput; }
+    usize       Window::getTextLength() const { return textIndex; }
     bool        Window::isTextInputEnabled() const { return textInputEnabled; }
 
     void Window::handleTextEvents(const u32 character) {
