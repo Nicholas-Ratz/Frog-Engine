@@ -6,11 +6,11 @@
 
 namespace FrogEngine {
     class Allocator;
-    class Block;
+    class StaticBlock;
 
     struct EngineCache {
         u32   version { 2 };
-        usize allocatorCache[3] { 3'072, 1'024, 2'048 };
+        usize allocatorCache[2] { 2'144, 2'144 };
     };
 
     class FROGENGINE_EXPORT Save {
@@ -21,7 +21,7 @@ namespace FrogEngine {
         void init();
 
       private:
-        Block* block {};
+        StaticBlock* block {};
 
         u32           id {};
         Pointer<char> configPath;

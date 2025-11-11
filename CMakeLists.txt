@@ -41,7 +41,7 @@ endif()
 # =========================
 add_library(FrogEngine #SHARED 
     Source/FrAllocator/Allocator.cpp
-    Source/FrAllocator/Block.cpp
+    Source/FrAllocator/StaticBlock.cpp
     Source/FrLog/Log.cpp
     Source/FrSave/Read.cpp
     Source/FrSave/Save.cpp

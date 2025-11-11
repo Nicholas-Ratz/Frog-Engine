@@ -18,14 +18,14 @@ namespace FrogEngine {
         logInfo("WINDOW: Text Input Deactivated");
     }
     void Window::loadTextInput(const char* text, const u32 size) {
-        if (size < 1'023) {
+        if (size < 1'024) {
             memcpy(textInput, text, size);
             textInput[size] = '\0';
             textIndex       = size;
-        } else if (size >= 1'024) {
+        } else {
             memcpy(textInput, text, 1'024);
             logWarning("WINDOW: New text buffer larger than 1024");
-            textInput[1'024] = '\0';
+            textInput[1'023] = '\0';
             textIndex        = 1'024;
         }
         logInfo("WINDOW: Text Input Loaded");

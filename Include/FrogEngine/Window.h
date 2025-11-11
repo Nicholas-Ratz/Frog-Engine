@@ -20,7 +20,7 @@
 namespace FrogEngine {
     struct OsWindow;
     class Allocator;
-    class Block;
+    class StaticBlock;
 
     constexpr u32 MAX_INPUT_POLLING { 16 };
 
@@ -302,9 +302,9 @@ namespace FrogEngine {
         void updateWindowsRect();
 
       private:
-        Block* block {};
+        StaticBlock* block {};
 
-        char className[128] = { 0 };
+        char className[16] = { 0 };
 
         WindowInfo windowInfo {};
 

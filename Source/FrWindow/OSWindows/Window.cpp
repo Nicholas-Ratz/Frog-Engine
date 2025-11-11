@@ -53,7 +53,7 @@ namespace FrogEngine {
     };
 
     Window::Window(Allocator* allocator) {
-        block = allocator->getWindowBlock();
+        block = allocator->getStaticBlock();
 
         osWindow  = block->alloc(sizeof(OsWindow));
         textInput = block->alloc(1'024);
@@ -78,8 +78,8 @@ namespace FrogEngine {
 
         os_window_ptr->hInstance = GetModuleHandleA(nullptr);
 
-        strncpy(className, class_name, 128);
-        className[127] = 0;
+        strncpy(className, class_name, 16);
+        className[15] = 0;
 
         os_window_ptr->windowClass.cbSize        = sizeof(WNDCLASSEXA);
         os_window_ptr->windowClass.lpszClassName = className;

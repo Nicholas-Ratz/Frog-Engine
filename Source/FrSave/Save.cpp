@@ -17,7 +17,7 @@
 
 namespace FrogEngine {
     Save::Save(Allocator* allocate) {
-        block = allocate->getSaveBlock();
+        block = allocate->getStaticBlock();
         id    = allocate->getID();
 
         configPath = block->alloc(512);

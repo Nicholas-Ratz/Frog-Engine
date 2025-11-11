@@ -19,7 +19,7 @@ u32 generateHash(const char* name) {
 }
 
 namespace FrogEngine {
-    Allocator::Allocator() : saveBlock(this), windowBlock(this) {}
+    Allocator::Allocator() : staticBlock(this) {}
     Allocator::~Allocator() {
         free(buffer);
         logInfo("ALLOCATOR: Deallocated %zu bytes", size);
@@ -49,8 +49,7 @@ namespace FrogEngine {
         free(path);
 
         size       = cache.allocatorCache[0];
-        saveSize   = cache.allocatorCache[1];
-        windowSize = cache.allocatorCache[2];
+        staticSize = cache.allocatorCache[1];
 
         buffer = malloc(size + 256);
         if (!buffer) logError("ALLOCATOR: Failed to allocate buffer");
@@ -59,14 +58,9 @@ namespace FrogEngine {
         logInfo("ALLOCATOR: Allocated %zu bytes", size);
 
         uptr index = (uptr)buffer + 15 & ~15;
-        saveBlock.init((ptr)index, saveSize);
-        index += saveSize + 32;
-        logInfo("  %zu for Save", saveSize);
-
-        index = index + 15 & ~15;
-        windowBlock.init((ptr)index, windowSize);
-        index += windowSize + 32;
-        logInfo("  %zu for Window", windowSize);
+        staticBlock.init((ptr)index, staticSize);
+        index += staticSize + 32;
+        logInfo("  %zu for Static memory", staticSize);
 
         index = index + 15 & ~15;
     }
@@ -74,13 +68,9 @@ namespace FrogEngine {
         free(buffer);
         logWarning("ALLOCATOR: Abort has been called");
     }
-    void Allocator::check() {
-        saveBlock.check();
-        windowBlock.check();
-    }
 
-    u32    Allocator::getID() { return id; }
-    Block* Allocator::getSaveBlock() { return &saveBlock; }
-    Block* Allocator::getWindowBlock() { return &windowBlock; }
+    u32          Allocator::getID() { return id; }
+    ptr*         Allocator::getBuffer() { return &buffer; }
+    StaticBlock* Allocator::getStaticBlock() { return &staticBlock; }
 }
 #endif

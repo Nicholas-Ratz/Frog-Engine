@@ -5,23 +5,30 @@
 #include <FrogEngine/Utility.h>
 
 namespace FrogEngine {
-    class Save;
     class Allocator;
-    class Block;
 
-    class Block {
+    class DynamicBlock {
       public:
-        Block(Allocator* _allocator);
-        ~Block();
+        DynamicBlock(Allocator* _allocator);
+        ~DynamicBlock();
 
-        void init(ptr _buffer, usize _size);
-        void check();
+        void init();
 
+      private:
+        ptr   buffer { nullptr };
+        usize size {};
+    };
+
+    class StaticBlock {
+      public:
+        StaticBlock(Allocator* _allocator);
+        ~StaticBlock();
+
+        void        init(ptr _buffer, usize _size);
         Pointer<u8> alloc(usize _size);
 
-        void setBuffer(ptr _buffer, usize _size);
-
         const ptr getBuffer() const;
+        usize     getSize() const;
 
       private:
         Allocator* allocator { nullptr };
@@ -38,11 +45,10 @@ namespace FrogEngine {
 
         void init(const char* name);
         void abort();
-        void check();
 
-        u32    getID();
-        Block* getSaveBlock();
-        Block* getWindowBlock();
+        u32          getID();
+        ptr*         getBuffer();
+        StaticBlock* getStaticBlock();
 
       private:
         u32 id {};
@@ -50,10 +56,8 @@ namespace FrogEngine {
         ptr   buffer { nullptr };
         usize size {};
 
-        usize saveSize {};
-        Block saveBlock;
-        usize windowSize {};
-        Block windowBlock;
+        usize       staticSize {};
+        StaticBlock staticBlock;
     };
 }
 
