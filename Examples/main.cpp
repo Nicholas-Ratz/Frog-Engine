@@ -11,6 +11,8 @@ int main() {
     Allocator allocator;
     allocator.init("FROGENGINE-EXAMPLE");
 
+    logInfo("TEST");
+
     Save save(&allocator);
     save.init();
 

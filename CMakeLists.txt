@@ -42,7 +42,6 @@ endif()
 add_library(FrogEngine #SHARED 
     Source/FrAllocator/Allocator.cpp
     Source/FrAllocator/StaticBlock.cpp
-    Source/FrLog/Log.cpp
     Source/FrSave/Read.cpp
     Source/FrSave/Save.cpp
     Source/FrSave/Write.cpp
@@ -87,17 +86,6 @@ add_executable(Example
 # Link with Frog-Engine
 # =========================
 target_link_libraries(Example FrogEngine)
-
-
-# =========================
-# Prevent terminal
-# =========================
-if (CMAKE_BUILD_TYPE STREQUAL "Release")
-    target_link_options(Example PRIVATE
-        -Wl,/SUBSYSTEM:WINDOWS
-        -Wl,/ENTRY:mainCRTStartup
-    )
-endif()
 
 
 # =========================

@@ -14,6 +14,11 @@
 #ifndef FROGENGINE_LOG_H
 #define FROGENGINE_LOG_H
 
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include <FrogEngine/Utility.h>
 
 namespace FrogEngine {
@@ -26,7 +31,18 @@ namespace FrogEngine {
      * @param format Null-terminated format string (printf-style).
      * @param ...   Variable arguments matching the format specifiers.
      */
-    void FROGENGINE_EXPORT logInfo(const char* format, ...);
+    inline void logInfo(const char* format, ...) {
+#if defined(FR_DEBUG) || defined(FR_LOG)
+        char* args;
+
+        va_start(args, format);
+        printf("[INFO] ");
+        vprintf(format, args);
+        printf("\n");
+        va_end(args);
+#endif
+    }
+
     /**
      * @brief Logs a warning message.
      *
@@ -36,19 +52,59 @@ namespace FrogEngine {
      * @param format Null-terminated format string (printf-style).
      * @param ...   Variable arguments matching the format specifiers.
      */
-    void FROGENGINE_EXPORT logWarning(const char* format, ...);
-    /**
-     * @brief Logs an error message.
-     *
-     * Reports critical failures that may affect program stability or correctness
-     * (e.g., missing resources, invalid states, failed allocations).
-     *
-     * @param format Null-terminated format string (printf-style).
-     * @param ...   Variable arguments matching the format specifiers.
-     *
-     * @note If called app will cleanly exit and abort.
-     */
-    void FROGENGINE_EXPORT logError(const char* format, ...);
+    inline void logWarning(const char* format, ...) {
+#if defined(FR_DEBUG) || defined(FR_LOG)
+        char* args;
+
+        va_start(args, format);
+        fprintf(stderr, "[WARNING] ");
+        vfprintf(stderr, format, args);
+        fprintf(stderr, "\n");
+        va_end(args);
+#endif
+    }
+}
+
+#ifdef FR_OS_WINDOWS
+#    include <Windows.h>
+#endif
+/**
+ * @brief Logs an error message.
+ *
+ * Reports critical failures that may affect program stability or correctness
+ * (e.g., missing resources, invalid states, failed allocations).
+ *
+ * @param format Null-terminated format string (printf-style).
+ * @param ...   Variable arguments matching the format specifiers.
+ *
+ * @note If called app will cleanly exit and abort.
+ */
+namespace FrogEngine {
+    inline void logError(const char* format, ...) {
+#if defined(FR_DEBUG) || defined(FR_LOG)
+        char* args;
+
+        va_start(args, format);
+        int length = vsnprintf(0, 0, format, args);
+        va_end(args);
+        if (length >= 0) {
+            char* str = (char*)malloc(length + 10);
+            if (str) {
+                va_start(args, format);
+                vsnprintf(str + 8, length + 1, format, args);
+                va_end(args);
+                memcpy(str, "[ERROR] ", 8);
+                str[8 + length] = '\n';
+                str[9 + length] = 0;
+#    ifdef FR_OS_WINDOWS
+                MessageBoxA(nullptr, str, "Error", MB_OK | MB_ICONERROR);
+#    endif
+                free(str);
+            }
+        }
+#endif
+        exit(-1);
+    }
 }
 
 #endif

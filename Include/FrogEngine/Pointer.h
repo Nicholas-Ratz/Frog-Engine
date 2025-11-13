@@ -1,7 +1,7 @@
 #ifndef FROGENGINE_POINTER_H
 #define FROGENGINE_POINTER_H
 
-#ifdef FR_DEBUG
+#if defined(FR_DEBUG) || defined(FR_MEMORY_SAFE)
 #    include <stdlib.h>
 #endif
 
@@ -19,7 +19,7 @@ namespace FrogEngine {
         explicit Pointer(usize _offset, uptr* _base, usize _size, ptr* _buffer) :
             offset(_offset),
             base(_base)
-#ifdef FR_DEBUG
+#if defined(FR_DEBUG) || defined(FR_MEMORY_SAFE)
             ,
             size(_size),
             buffer(_buffer)
@@ -32,7 +32,7 @@ namespace FrogEngine {
         Pointer(const Pointer<U> &other) :
             offset(other.getOffset()),
             base(other.getBase())
-#ifdef FR_DEBUG
+#if defined(FR_DEBUG) || defined(FR_MEMORY_SAFE)
             ,
             size(other.getSize()),
             buffer(other.getBuffer())
@@ -46,7 +46,7 @@ namespace FrogEngine {
         T* operator->() const { return get(); }
 
         Pointer operator+(usize n) const {
-#ifdef FR_DEBUG
+#if defined(FR_DEBUG) || defined(FR_MEMORY_SAFE)
             if (n >= size) {
                 free(*buffer);
                 logError(
@@ -57,7 +57,7 @@ namespace FrogEngine {
                 return Pointer(offset + n, base);
         }
         Pointer operator-(usize n) const {
-#ifdef FR_DEBUG
+#if defined(FR_DEBUG) || defined(FR_MEMORY_SAFE)
             if (n >= size) {
                 free(*buffer);
                 logError(
@@ -69,7 +69,7 @@ namespace FrogEngine {
         }
 
         T &operator[](usize n) const {
-#ifdef FR_DEBUG
+#if defined(FR_DEBUG) || defined(FR_MEMORY_SAFE)
             if (n >= size) {
                 free(*buffer);
                 logError(
@@ -86,7 +86,7 @@ namespace FrogEngine {
 
         usize getOffset() const { return offset; }
         uptr* getBase() const { return base; }
-#ifdef FR_DEBUG
+#if defined(FR_DEBUG) || defined(FR_MEMORY_SAFE)
         usize getSize() const { return size; }
         ptr*  getBuffer() const { return buffer; }
 #endif
@@ -95,7 +95,7 @@ namespace FrogEngine {
         usize offset {};
         uptr* base {};
 
-#ifdef FR_DEBUG
+#if defined(FR_DEBUG) || defined(FR_MEMORY_SAFE)
         usize size {};
         ptr*  buffer { nullptr };
 #endif

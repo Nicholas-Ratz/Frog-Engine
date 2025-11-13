@@ -15,6 +15,10 @@
 #ifdef FR_OS_WINDOWS
 #    include <Windows.h>
 #    define APP_ICON 888
+#    if defined(FR_DISABLE_CONSOLE)
+#        pragma comment(linker, "/SUBSYSTEM:WINDOWS")
+#        pragma comment(linker, "/ENTRY:mainCRTStartup")
+#    endif
 #endif
 
 namespace FrogEngine {
