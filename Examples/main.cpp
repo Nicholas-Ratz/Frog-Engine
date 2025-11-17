@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 #include <FrogEngine/Allocator.h>
 #include <FrogEngine/Log.h>
 #include <FrogEngine/Save.h>
@@ -10,8 +8,6 @@ using namespace FrogEngine;
 int main() {
     Allocator allocator;
     allocator.init("FROGENGINE-EXAMPLE");
-
-    logInfo("TEST");
 
     Save save(&allocator);
     save.init();
@@ -33,7 +29,7 @@ int main() {
             break;
         }
         if (window.getKeyPress() & KEY_ENTER) window.setWindowTitle(window.getText());
-        if (window.getKeyPress() & INPUT_ANY) printf("%s\n", window.getText());
+        if (window.getKeyPress() & INPUT_ANY) logInfo("%s", (char*)window.getText());
     }
 
     window.stopTextInput();

@@ -17,9 +17,52 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include <FrogEngine/Utility.h>
+
+#define FR_LOG_FORMAT_RESET         "\033[0m"
+#define FR_LOG_FORMAT_BOLD          "\033[1m"
+#define FR_LOG_FORMAT_DIM           "\033[2m"
+#define FR_LOG_FORMAT_ITALIC        "\033[3m"
+#define FR_LOG_FORMAT_UNDERLINE     "\033[4m"
+#define FR_LOG_FORMAT_BLINK         "\033[5m"
+#define FR_LOG_FORMAT_STRIKETHROUGH "\033[9m"
+
+#define FR_LOG_FORMAT_BLACK   "\033[30m"
+#define FR_LOG_FORMAT_RED     "\033[31m"
+#define FR_LOG_FORMAT_GREEN   "\033[32m"
+#define FR_LOG_FORMAT_YELLOW  "\033[33m"
+#define FR_LOG_FORMAT_BLUE    "\033[34m"
+#define FR_LOG_FORMAT_MAGENTA "\033[35m"
+#define FR_LOG_FORMAT_CYAN    "\033[36m"
+#define FR_LOG_FORMAT_WHITE   "\033[37m"
+
+#define FR_LOG_FORMAT_BRIGHT_BLACK   "\033[90m"
+#define FR_LOG_FORMAT_BRIGHT_RED     "\033[91m"
+#define FR_LOG_FORMAT_BRIGHT_GREEN   "\033[92m"
+#define FR_LOG_FORMAT_BRIGHT_YELLOW  "\033[93m"
+#define FR_LOG_FORMAT_BRIGHT_BLUE    "\033[94m"
+#define FR_LOG_FORMAT_BRIGHT_MAGENTA "\033[95m"
+#define FR_LOG_FORMAT_BRIGHT_CYAN    "\033[96m"
+#define FR_LOG_FORMAT_BRIGHT_WHITE   "\033[97m"
+
+#define FR_LOG_FORMAT_BG_BLACK   "\033[40m"
+#define FR_LOG_FORMAT_BG_RED     "\033[41m"
+#define FR_LOG_FORMAT_BG_GREEN   "\033[42m"
+#define FR_LOG_FORMAT_BG_YELLOW  "\033[43m"
+#define FR_LOG_FORMAT_BG_BLUE    "\033[44m"
+#define FR_LOG_FORMAT_BG_MAGENTA "\033[45m"
+#define FR_LOG_FORMAT_BG_CYAN    "\033[46m"
+#define FR_LOG_FORMAT_BG_WHITE   "\033[47m"
+
+#define FR_LOG_FORMAT_BG_BRIGHT_BLACK   "\033[100m"
+#define FR_LOG_FORMAT_BG_BRIGHT_RED     "\033[101m"
+#define FR_LOG_FORMAT_BG_BRIGHT_GREEN   "\033[102m"
+#define FR_LOG_FORMAT_BG_BRIGHT_YELLOW  "\033[103m"
+#define FR_LOG_FORMAT_BG_BRIGHT_BLUE    "\033[104m"
+#define FR_LOG_FORMAT_BG_BRIGHT_MAGENTA "\033[105m"
+#define FR_LOG_FORMAT_BG_BRIGHT_CYAN    "\033[106m"
+#define FR_LOG_FORMAT_BG_BRIGHT_WHITE   "\033[107m"
 
 namespace FrogEngine {
     /**
@@ -36,9 +79,9 @@ namespace FrogEngine {
         char* args;
 
         va_start(args, format);
-        printf("[INFO] ");
+        printf("%s[INFO] %s", FR_LOG_FORMAT_GREEN, FR_LOG_FORMAT_RESET);
         vprintf(format, args);
-        printf("\n");
+        printf("\n%s", FR_LOG_FORMAT_RESET);
         va_end(args);
 #endif
     }
@@ -57,9 +100,9 @@ namespace FrogEngine {
         char* args;
 
         va_start(args, format);
-        fprintf(stderr, "[WARNING] ");
+        fprintf(stderr, "%s[WARNING] %s", FR_LOG_FORMAT_BRIGHT_YELLOW, FR_LOG_FORMAT_RESET);
         vfprintf(stderr, format, args);
-        fprintf(stderr, "\n");
+        fprintf(stderr, "\n%s", FR_LOG_FORMAT_RESET);
         va_end(args);
 #endif
     }
@@ -96,6 +139,12 @@ namespace FrogEngine {
                 memcpy(str, "[ERROR] ", 8);
                 str[8 + length] = '\n';
                 str[9 + length] = 0;
+                printf(
+                    "%s%s%s%s",
+                    FR_LOG_FORMAT_BRIGHT_RED,
+                    FR_LOG_FORMAT_BOLD,
+                    FR_LOG_FORMAT_ITALIC,
+                    str);
 #    ifdef FR_OS_WINDOWS
                 MessageBoxA(nullptr, str, "Error", MB_OK | MB_ICONERROR);
 #    endif

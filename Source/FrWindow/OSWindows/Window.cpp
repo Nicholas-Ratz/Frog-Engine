@@ -1,5 +1,7 @@
 #include <FrogEngine/Utility.h>
 
+#include <cstring>
+
 #ifdef FR_OS_WINDOWS
 
 #    include <Windows.h>
@@ -60,57 +62,76 @@ namespace FrogEngine {
     }
 
     Window::~Window() {
-        if (!UnregisterClassA(className, ((OsWindow*)osWindow)->hInstance))
-            logError("WINDOW: Failed to unregister window class: %lx", GetLastError());
-        logInfo("WINDOW: Window Class Unregistered");
+        if (!UnregisterClassA(className, osWindow->hInstance))
+            logError(
+                "%sWINDOW%s: Failed to unregister window class: %lx",
+                FR_LOG_FORMAT_BLUE,
+                FR_LOG_FORMAT_RESET,
+                GetLastError());
+        logInfo("%sWINDOW%s: Window Class Unregistered", FR_LOG_FORMAT_BLUE, FR_LOG_FORMAT_RESET);
     }
 
     void Window::init(const char* class_name) {
         if (className[0] != 0) {
-            logWarning("WINDOW: init() called after initialization");
+            logWarning(
+                "%sWINDOW%s: init() called after initialization",
+                FR_LOG_FORMAT_BLUE,
+                FR_LOG_FORMAT_RESET);
             return;
         }
 
-        OsWindow* os_window_ptr = ((OsWindow*)osWindow);
-
         if (!SetProcessDPIAware())
-            logWarning("WINDOW: Failed to set DPI awareness: %lx", GetLastError());
+            logWarning(
+                "%sWINDOW%s: Failed to set DPI awareness: %lx",
+                FR_LOG_FORMAT_BLUE,
+                FR_LOG_FORMAT_RESET,
+                GetLastError());
 
-        os_window_ptr->hInstance = GetModuleHandleA(nullptr);
+        osWindow->hInstance = GetModuleHandleA(nullptr);
 
-        strncpy(className, class_name, 16);
+        memcpy(className, class_name, 16);
         className[15] = 0;
 
-        os_window_ptr->windowClass.cbSize        = sizeof(WNDCLASSEXA);
-        os_window_ptr->windowClass.lpszClassName = className;
-        os_window_ptr->windowClass.hInstance     = os_window_ptr->hInstance;
-        os_window_ptr->windowClass.hCursor       = LoadCursorA(nullptr, IDC_ARROW);
-        os_window_ptr->windowClass.lpfnWndProc   = windowProc;
-        os_window_ptr->windowClass.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+        osWindow->windowClass.cbSize        = sizeof(WNDCLASSEXA);
+        osWindow->windowClass.lpszClassName = className;
+        osWindow->windowClass.hInstance     = osWindow->hInstance;
+        osWindow->windowClass.hCursor       = LoadCursorA(nullptr, IDC_ARROW);
+        osWindow->windowClass.lpfnWndProc   = windowProc;
+        osWindow->windowClass.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
 
-        HICON icon = LoadIconA(os_window_ptr->hInstance, MAKEINTRESOURCEA(APP_ICON));
-        if (!icon) logWarning("WINDOW: Failed to load icon: %lu", GetLastError());
+        HICON icon = LoadIconA(osWindow->hInstance, MAKEINTRESOURCEA(APP_ICON));
+        if (!icon)
+            logWarning(
+                "%sWINDOW%s: Failed to load icon: %lu",
+                FR_LOG_FORMAT_BLUE,
+                FR_LOG_FORMAT_RESET,
+                GetLastError());
         else {
-            os_window_ptr->windowClass.hIcon   = icon;
-            os_window_ptr->windowClass.hIconSm = icon;
+            osWindow->windowClass.hIcon   = icon;
+            osWindow->windowClass.hIconSm = icon;
         }
 
-        logInfo("WINDOW: Window Class Registered");
+        logInfo("%sWINDOW%s: Window Class Registered", FR_LOG_FORMAT_BLUE, FR_LOG_FORMAT_RESET);
         logInfo("  Name: %s", className);
 
-        if (!RegisterClassExA(&os_window_ptr->windowClass))
-            logError("WINDOW: Failed to register window class: %lx", GetLastError());
+        if (!RegisterClassExA(&osWindow->windowClass))
+            logError(
+                "%sWINDOW%s: Failed to register window class: %lx",
+                FR_LOG_FORMAT_BLUE,
+                FR_LOG_FORMAT_RESET,
+                GetLastError());
     }
     void Window::open(const WindowInfo* window_info) {
-        OsWindow* os_window_ptr = ((OsWindow*)osWindow);
-
-        if (os_window_ptr->hWindow) {
-            logWarning("WINDOW: open() called after open");
+        if (osWindow->hWindow) {
+            logWarning(
+                "%sWINDOW%s: open() called after open", FR_LOG_FORMAT_BLUE, FR_LOG_FORMAT_RESET);
             return;
         }
 
         if (!window_info) windowInfo = {};
         else windowInfo = *window_info;
+        memcpy(windowTitle, windowInfo.title, 128);
+        windowTitle[127] = 0;
 
         DWORD style { WS_VISIBLE };
 
@@ -124,7 +145,11 @@ namespace FrogEngine {
             case WINDOWED: {
                 style |= WS_OVERLAPPEDWINDOW;
                 if (!AdjustWindowRect(&rect, style, FALSE))
-                    logWarning("WINDOW: Failed to adjust window rect: %lx", GetLastError());
+                    logWarning(
+                        "%sWINDOW%s: Failed to adjust window rect: %lx",
+                        GetLastError(),
+                        FR_LOG_FORMAT_BLUE,
+                        FR_LOG_FORMAT_RESET);
                 break;
             }
             case BORDERLESS: {
@@ -140,16 +165,21 @@ namespace FrogEngine {
                 break;
             }
             default:
-                logWarning("Invalid window style");
+                logWarning(
+                    "%sWINDOW%s: Invalid window style", FR_LOG_FORMAT_BLUE, FR_LOG_FORMAT_RESET);
                 style |= WS_OVERLAPPEDWINDOW;
                 if (!AdjustWindowRect(&rect, style, FALSE))
-                    logWarning("WINDOW: Failed to adjust window rect: %lx", GetLastError());
+                    logWarning(
+                        "%sWINDOW%s: Failed to adjust window rect: %lx",
+                        FR_LOG_FORMAT_BLUE,
+                        FR_LOG_FORMAT_RESET,
+                        GetLastError());
         }
 
-        os_window_ptr->hWindow = CreateWindowExA(
+        osWindow->hWindow = CreateWindowExA(
             0,
             className,
-            window_info->title,
+            windowTitle,
             style,
             rect.left,
             rect.top,
@@ -157,28 +187,32 @@ namespace FrogEngine {
             rect.bottom - rect.top,
             nullptr,
             nullptr,
-            os_window_ptr->hInstance,
+            osWindow->hInstance,
             this);
-        if (!os_window_ptr->hWindow)
-            logError("WINDOW: Failed to create window: %lx", GetLastError());
-        logInfo("WINDOW: Window Created");
-        logInfo("  Title: %s", window_info->title);
+        if (!osWindow->hWindow)
+            logError(
+                "%sWINDOW%s: Failed to create window: %lx",
+                FR_LOG_FORMAT_BLUE,
+                FR_LOG_FORMAT_RESET,
+                GetLastError());
+        logInfo("%sWINDOW%s: Window Created", FR_LOG_FORMAT_BLUE, FR_LOG_FORMAT_RESET);
+        logInfo("  Title: %s", windowTitle);
         logInfo("  Size: (%i, %i)", window_info->width, window_info->height);
         logInfo("  Position: (%i, %i)", window_info->x, window_info->y);
 
-        GetClientRect(os_window_ptr->hWindow, &rect);
+        GetClientRect(osWindow->hWindow, &rect);
         windowInfo.x      = rect.left;
         windowInfo.y      = rect.top;
         windowInfo.width  = rect.right - rect.left;
         windowInfo.height = rect.bottom - rect.top;
     }
     void Window::close() const {
-        DestroyWindow(((OsWindow*)osWindow)->hWindow);
-        logInfo("WINDOW: Window Destroyed");
+        DestroyWindow(osWindow->hWindow);
+        logInfo("%sWINDOW%s: Window Destroyed", FR_LOG_FORMAT_BLUE, FR_LOG_FORMAT_RESET);
     }
 
     bool Window::pollEvents() {
-        if (!IsWindow(((OsWindow*)osWindow)->hWindow)) return false;
+        if (!IsWindow(osWindow->hWindow)) return false;
 
         MSG msg {};
         mousePress        = 0;
@@ -201,8 +235,12 @@ namespace FrogEngine {
         keyDown                       = keyDown & ~MODIFIER_REGION | bit;
 
         POINT point;
-        if (!GetCursorPos(&point) || !ScreenToClient(((OsWindow*)osWindow)->hWindow, &point))
-            logWarning("WINDOW: Failed to get cursor position: %lx", GetLastError());
+        if (!GetCursorPos(&point) || !ScreenToClient(osWindow->hWindow, &point))
+            logWarning(
+                "%sWINDOW%s: Failed to get cursor position: %lx",
+                FR_LOG_FORMAT_BLUE,
+                FR_LOG_FORMAT_RESET,
+                GetLastError());
         mouseX = point.x;
         mouseY = point.y;
 
@@ -217,46 +255,45 @@ namespace FrogEngine {
     }
 
     void Window::setWindowTitle(const char* title) {
-        windowInfo.title = title;
-        if (!SetWindowTextA(((OsWindow*)osWindow)->hWindow, title))
-            logWarning("WINDOW: Failed to set window title: %lx", GetLastError());
-        logInfo("WINDOW: Window Title Updated");
+        memcpy(windowTitle, title, 128);
+        windowTitle[127] = 0;
+        if (!SetWindowTextA(osWindow->hWindow, windowTitle))
+            logWarning(
+                "%sWINDOW%s: Failed to set window title: %lx",
+                GetLastError(),
+                FR_LOG_FORMAT_BLUE,
+                FR_LOG_FORMAT_RESET);
+        logInfo("%sWINDOW%s: Window Title Updated", FR_LOG_FORMAT_BLUE, FR_LOG_FORMAT_RESET);
         logInfo("  Title: %s", title);
     }
     void Window::setWindowPos(const i32 x, const i32 y) {
         if (!SetWindowPos(
-                ((OsWindow*)osWindow)->hWindow,
-                HWND_TOP,
-                x,
-                y,
-                windowInfo.width,
-                windowInfo.height,
-                0))
-            logWarning("WINDOW: Failed to set window pos: %lx", GetLastError());
+                osWindow->hWindow, HWND_TOP, x, y, windowInfo.width, windowInfo.height, 0))
+            logWarning(
+                "%sWINDOW%s: Failed to set window pos: %lx",
+                GetLastError(),
+                FR_LOG_FORMAT_BLUE,
+                FR_LOG_FORMAT_RESET);
         windowInfo.x = x;
         windowInfo.y = y;
-        logInfo("WINDOW: Window Position Updated");
+        logInfo("%sWINDOW%s: Window Position Updated", FR_LOG_FORMAT_BLUE, FR_LOG_FORMAT_RESET);
         logInfo("  Position: (%i, %i)", windowInfo.x, windowInfo.y);
     }
     void Window::setWindowSize(const i32 width, const i32 height) {
         if (!SetWindowPos(
-                ((OsWindow*)osWindow)->hWindow,
-                HWND_TOP,
-                windowInfo.x,
-                windowInfo.y,
-                width,
-                height,
-                0))
-            logWarning("WINDOW: Failed to set window size: %lx", GetLastError());
+                osWindow->hWindow, HWND_TOP, windowInfo.x, windowInfo.y, width, height, 0))
+            logWarning(
+                "%sWINDOW%s: Failed to set window size: %lx",
+                FR_LOG_FORMAT_BLUE,
+                FR_LOG_FORMAT_RESET,
+                GetLastError());
         windowInfo.width  = width;
         windowInfo.height = height;
-        logInfo("WINDOW: Window Size Updated");
+        logInfo("%sWINDOW%s: Window Size Updated", FR_LOG_FORMAT_BLUE, FR_LOG_FORMAT_RESET);
         logInfo("  Size: (%i, %i)", windowInfo.width, windowInfo.height);
     }
     void Window::setWindowStyle(const WindowStyle window_style) {
         if (windowInfo.style == window_style) return;
-
-        OsWindow* os_window_ptr = ((OsWindow*)osWindow);
 
         DWORD style { WS_VISIBLE };
         RECT  rect;
@@ -265,8 +302,12 @@ namespace FrogEngine {
         rect.right  = windowInfo.x + windowInfo.width;
         rect.bottom = windowInfo.y + windowInfo.height;
         if (windowInfo.style != FULLSCREEN) {
-            if (!GetWindowRect(os_window_ptr->hWindow, &rect)) {
-                logWarning("WINDOW: Failed to get window rect: %lx", GetLastError());
+            if (!GetWindowRect(osWindow->hWindow, &rect)) {
+                logWarning(
+                    "%sWINDOW%s: Failed to get window rect: %lx",
+                    FR_LOG_FORMAT_BLUE,
+                    FR_LOG_FORMAT_RESET,
+                    GetLastError());
                 return;
             }
             windowInfo.x      = rect.left;
@@ -289,29 +330,48 @@ namespace FrogEngine {
                 rect.bottom  = GetSystemMetrics(SM_CYSCREEN);
                 break;
             }
-            default: logWarning("Invalid window style"); return;
+            default:
+                logWarning(
+                    "%sWINDOW%s: Invalid window style", FR_LOG_FORMAT_BLUE, FR_LOG_FORMAT_RESET);
+                return;
         }
 
-        if (!SetWindowLongPtr(os_window_ptr->hWindow, GWL_STYLE, style))
-            logError("WINDOW: Failed to set window style: %lx", GetLastError());
+        if (!SetWindowLongPtr(osWindow->hWindow, GWL_STYLE, style))
+            logError(
+                "%sWINDOW%s: Failed to set window style: %lx",
+                FR_LOG_FORMAT_BLUE,
+                FR_LOG_FORMAT_RESET,
+                GetLastError());
         if (!SetWindowPos(
-                os_window_ptr->hWindow,
+                osWindow->hWindow,
                 HWND_TOP,
                 rect.left,
                 rect.top,
                 rect.right - rect.left,
                 rect.bottom - rect.top,
                 SWP_FRAMECHANGED | SWP_NOZORDER))
-            logWarning("WINDOW: Failed to set window pos: %lx", GetLastError());
-        if (!UpdateWindow(os_window_ptr->hWindow))
-            logWarning("WINDOW: Failed to update window: %lx", GetLastError());
-        if (!InvalidateRect(os_window_ptr->hWindow, nullptr, TRUE))
-            logWarning("WINDOW: Failed to invalidate window: %lx", GetLastError());
+            logWarning(
+                "%sWINDOW%s: Failed to set window pos: %lx",
+                FR_LOG_FORMAT_BLUE,
+                FR_LOG_FORMAT_RESET,
+                GetLastError());
+        if (!UpdateWindow(osWindow->hWindow))
+            logWarning(
+                "%sWINDOW%s: Failed to update window: %lx",
+                FR_LOG_FORMAT_BLUE,
+                FR_LOG_FORMAT_RESET,
+                GetLastError());
+        if (!InvalidateRect(osWindow->hWindow, nullptr, TRUE))
+            logWarning(
+                "%sWINDOW%s: Failed to invalidate window: %lx",
+                FR_LOG_FORMAT_BLUE,
+                FR_LOG_FORMAT_RESET,
+                GetLastError());
 
         windowInfo.style = window_style;
-        logInfo("Window Style Updated");
+        logInfo("%sWINDOW%s: Window Style Updated", FR_LOG_FORMAT_BLUE, FR_LOG_FORMAT_RESET);
     }
-    const char* Window::getWindowTitle() const { return windowInfo.title; }
+    const char* Window::getWindowTitle() const { return windowTitle; }
     void        Window::getWindowPos(i32* x, i32* y) const {
         *x = windowInfo.x;
         *y = windowInfo.y;
@@ -325,7 +385,7 @@ namespace FrogEngine {
     void Window::updateWindowsRect() {
         RECT rect;
 
-        GetClientRect(((OsWindow*)osWindow)->hWindow, &rect);
+        GetClientRect(osWindow->hWindow, &rect);
 
         windowInfo.x      = rect.left;
         windowInfo.y      = rect.top;

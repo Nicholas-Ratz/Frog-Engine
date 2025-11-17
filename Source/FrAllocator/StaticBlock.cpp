@@ -11,19 +11,29 @@ namespace FrogEngine {
         buffer = _buffer;
         size   = _size;
     }
-
     Pointer<u8> StaticBlock::alloc(usize _size) {
         if (index + _size > size) {
             logError(
-                "ALLOCATOR: Tried to alloc %zu when only %zu is allocated", index + _size, size);
+                "%sALLOCATOR%s: Tried to alloc %zu when only %zu is allocated",
+                FR_LOG_FORMAT_YELLOW,
+                FR_LOG_FORMAT_RESET,
+                index + _size,
+                size);
             allocator->abort();
         }
 
-        logInfo("ALLOCATOR: Allocated %zu out of %zu static memory", index + _size, size);
-        Pointer<u8> result(index, (uptr*)&buffer, _size, allocator->getBuffer());
+        logInfo(
+            "%sALLOCATOR%s: Allocated %zu out of %zu static memory",
+            FR_LOG_FORMAT_YELLOW,
+            FR_LOG_FORMAT_RESET,
+            index + _size,
+            size);
+        Pointer<u8> result(index, (uptr*)&buffer, _size, allocator->getBuffer(), 0);
         index += _size;
         return result;
     }
+
+    void StaticBlock::setBuffer(ptr _buffer) { buffer = _buffer; }
 
     const ptr StaticBlock::getBuffer() const { return buffer; }
     usize     StaticBlock::getSize() const { return size; }

@@ -172,14 +172,14 @@ namespace FrogEngine {
          * Enables appending char input to end of Text buffer.
          * @see stopTextInput(), loadTextInput()
          */
-        void        startTextInput();
+        void                startTextInput();
         /**
          * @brief Disables text input mode.
          *
          * Stops writing to Text buffer.
          * @note Does not clear.
          */
-        void        stopTextInput();
+        void                stopTextInput();
         /**
          * @brief Pre-loads text into the input buffer.
          * @param text Source text to insert
@@ -187,28 +187,29 @@ namespace FrogEngine {
          *
          * Useful for setting default values in text fields.
          */
-        void        loadTextInput(const char* text, u32 size);
+        void                loadTextInput(const char* text, u32 size);
         /**
          * @brief Clears all text from the input buffer.
          */
-        void        clearTextInput();
+        void                clearTextInput();
         /**
          * @brief Gets the current text input buffer.
          * @return Null-terminated string of current text
          *
          * @note Pointer directly connected to internal Text buffer.
+         * @note Max size is 1024 characters.
          */
-        const char* getText() const;
+        const Pointer<char> getText() const;
         /**
          * @brief Gets length of the text input buffer.
          * @return Length in bytes/chars of text.
          */
-        usize       getTextLength() const;
+        usize               getTextLength() const;
         /**
          * @brief Checks if text input is currently active.
          * @return true if text input is enabled
          */
-        bool        isTextInputEnabled() const;
+        bool                isTextInputEnabled() const;
 
 
         /**
@@ -308,7 +309,8 @@ namespace FrogEngine {
       private:
         StaticBlock* block {};
 
-        char className[16] = { 0 };
+        char windowTitle[128] = { 0 };
+        char className[16]    = { 0 };
 
         WindowInfo windowInfo {};
 

@@ -9,8 +9,8 @@ namespace FrogEngine {
     class StaticBlock;
 
     struct EngineCache {
-        u32   version { 2 };
-        usize allocatorCache[2] { 2'144, 2'144 };
+        u32   version { 1 };
+        usize allocatorCache { 1'024 };
     };
 
     class FROGENGINE_EXPORT Save {

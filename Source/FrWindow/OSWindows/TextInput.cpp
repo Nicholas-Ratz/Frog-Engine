@@ -1,5 +1,3 @@
-#include <string.h>
-
 #include <FrogEngine/Utility.h>
 
 #ifdef FR_OS_WINDOWS
@@ -11,11 +9,11 @@
 namespace FrogEngine {
     void Window::startTextInput() {
         textInputEnabled = true;
-        logInfo("WINDOW: Text Input Activated");
+        logInfo("%sWINDOW%s: Text Input Activated", FR_LOG_FORMAT_BLUE, FR_LOG_FORMAT_RESET);
     }
     void Window::stopTextInput() {
         textInputEnabled = false;
-        logInfo("WINDOW: Text Input Deactivated");
+        logInfo("%sWINDOW%s: Text Input Deactivated", FR_LOG_FORMAT_BLUE, FR_LOG_FORMAT_RESET);
     }
     void Window::loadTextInput(const char* text, const u32 size) {
         if (size < 1'024) {
@@ -24,19 +22,22 @@ namespace FrogEngine {
             textIndex       = size;
         } else {
             memcpy(textInput, text, 1'024);
-            logWarning("WINDOW: New text buffer larger than 1024");
+            logWarning(
+                "%sWINDOW%s: New text buffer larger than 1024",
+                FR_LOG_FORMAT_BLUE,
+                FR_LOG_FORMAT_RESET);
             textInput[1'023] = '\0';
             textIndex        = 1'024;
         }
-        logInfo("WINDOW: Text Input Loaded");
+        logInfo("%sWINDOW%s: Text Input Loaded", FR_LOG_FORMAT_BLUE, FR_LOG_FORMAT_RESET);
     }
     void Window::clearTextInput() {
         memset(textInput, 0, 1'024);
-        logInfo("WINDOW: Text Input Cleared");
+        logInfo("%sWINDOW%s: Text Input Cleared", FR_LOG_FORMAT_BLUE, FR_LOG_FORMAT_RESET);
     }
-    const char* Window::getText() const { return textInput; }
-    usize       Window::getTextLength() const { return textIndex; }
-    bool        Window::isTextInputEnabled() const { return textInputEnabled; }
+    const Pointer<char> Window::getText() const { return textInput; }
+    usize               Window::getTextLength() const { return textIndex; }
+    bool                Window::isTextInputEnabled() const { return textInputEnabled; }
 
     void Window::handleTextEvents(const u32 character) {
         if (!textInputEnabled) return;
@@ -48,7 +49,10 @@ namespace FrogEngine {
         switch (char_character) {
             case '\r': {
                 if (textIndex >= 1'024) {
-                    logWarning("WINDOW: Text input cannot be more than 1024 characters");
+                    logWarning(
+                        "%sWINDOW%s: Text input cannot be more than 1024 characters",
+                        FR_LOG_FORMAT_BLUE,
+                        FR_LOG_FORMAT_RESET);
                     break;
                 }
                 textInput[textIndex] = '\n';
@@ -62,7 +66,10 @@ namespace FrogEngine {
             }
             default: {
                 if (textIndex >= 1'024) {
-                    logWarning("WINDOW: Text input cannot be more than 1024 characters");
+                    logWarning(
+                        "%sWINDOW%s: Text input cannot be more than 1024 characters",
+                        FR_LOG_FORMAT_BLUE,
+                        FR_LOG_FORMAT_RESET);
                     break;
                 }
                 textInput[textIndex] = char_character;

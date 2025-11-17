@@ -12,9 +12,15 @@ namespace FrogEngine {
         DynamicBlock(Allocator* _allocator);
         ~DynamicBlock();
 
-        void init();
+        void        init(ptr _buffer, usize _size);
+        void        resize(usize _size);
+        Pointer<u8> alloc(usize _size);
+        Pointer<u8> realloc(Pointer<u8> pointer, usize _old, usize _new);
+        void        dealloc(Pointer<u8> pointer, usize _size);
 
       private:
+        Allocator* allocator { nullptr };
+
         ptr   buffer { nullptr };
         usize size {};
     };
@@ -26,6 +32,8 @@ namespace FrogEngine {
 
         void        init(ptr _buffer, usize _size);
         Pointer<u8> alloc(usize _size);
+
+        void setBuffer(ptr _buffer);
 
         const ptr getBuffer() const;
         usize     getSize() const;
@@ -44,10 +52,12 @@ namespace FrogEngine {
         ~Allocator();
 
         void init(const char* name);
+        void resize(usize _size);
         void abort();
 
         u32          getID();
         ptr*         getBuffer();
+        usize        getSize();
         StaticBlock* getStaticBlock();
 
       private:
@@ -56,8 +66,10 @@ namespace FrogEngine {
         ptr   buffer { nullptr };
         usize size {};
 
-        usize       staticSize {};
-        StaticBlock staticBlock;
+        const usize  staticSize { 2'144 };
+        StaticBlock  staticBlock;
+        usize        dynamicSize {};
+        DynamicBlock dynamicBlock;
     };
 }
 
